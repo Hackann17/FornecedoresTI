@@ -1,0 +1,52 @@
+formulario:
+CRUD (Create, Read, Update, Delete)
+
+para armazenamento de contatos(agenda de fornecedores de TI)
+
+*na tela inicial todos os forncedores adicionados irao estar visiveis em forma de lista 
+
+Usuario{
+* informações do usuário serao recolhidas atraves da sessao do navegador utilizado para acessar o programa
+* devemos gerar uma nota para cada ação realizada pelo usuário( o que alterou, adicionou, deletou)
+
+- adicionar fornecedor
+- alterar fornecedor
+- deletar fornecedor
+
+}
+
+* simples modelo para gerar as instancias e armazenar as informações no MySQL
+Fornecedor{
+Nome
+CNPJ
+contato(numero para contato)
+email
+anotação
+
+}
+
+* esssa informações aparecerão em outra tela em forma de lista tbm e não poderão ser deletados
+Acao{
+Nome Usuario
+Ação
+Data
+Fornecedor
+
+- qual usuario fez
+- o que fez(alterou, deletou, adicionou)
+- quando fez
+* levar dados do fornecedor tbm
+
+}
+* guardar a sessao do windows, para controle de de acesso autentificado
+
+TELAS
+Formulários(entrada):
+ 1 para adicionar fornecedor
+ 2 para alterar fornecedor
+
+Visualização:
+ 3 mostrar lista de fornecedores
+ 4 mostrar lista de ações
+
+
