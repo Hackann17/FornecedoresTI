@@ -7,6 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\NovaPasta1\**" />
+    <Compile Remove="Views\NovaPasta2\**" />
+    <Content Remove="Views\NovaPasta1\**" />
+    <Content Remove="Views\NovaPasta2\**" />
+    <EmbeddedResource Remove="Views\NovaPasta1\**" />
+    <EmbeddedResource Remove="Views\NovaPasta2\**" />
+    <None Remove="Views\NovaPasta1\**" />
+    <None Remove="Views\NovaPasta2\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\Class.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Fornecedor\Index.cshtml" />
     <Content Remove="Views\Home\Privacy.cshtml" />
   </ItemGroup>
 

@@ -16,8 +16,8 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\pedro.godinho\Documents\Pedro\AgendaFornecedores\AgendaFornecedores
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/pedro.godinho/Documents/Pedro/AgendaFornecedores/AgendaFornecedores/Views/Home/Formulario.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxGb3JtdWxhcmlvLmNzaHRtbA==
+[C:/Users/pedro.godinho/Documents/Pedro/AgendaFornecedores/AgendaFornecedores/Views/Fornecedor/Formulario.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRm9ybmVjZWRvclxGb3JtdWxhcmlvLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/pedro.godinho/Documents/Pedro/AgendaFornecedores/AgendaFornecedores/Views/Home/Index.cshtml]

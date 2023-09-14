@@ -9,32 +9,32 @@
 
     <div class="col"></div>
     <div class="container col">
-    <form action="" method="post" name="formularioAdicionar">
+        <form method="post" asp-controller="Fornecedor" asp-action="Cadastrar" name="formularioAdicionar">
 
             <div class="form-group">
               <label for="Nome">Nome:</label>
-                <input type="email" class="form-control" id="nome" placeholder="Didigite o nome do forncedor" name="Nome">
+                <input type="text" class="form-control" id="nome"  required placeholder="Digite o nome do fornecedor" name="nome">
             </div>
 
             <div class="form-group">
                 <label for="CNPJ">CNPJ:</label>
-                <input type="text" class="form-control" id="CNPJ" placeholder="Didigite o CNPJ do forncedor" name="CNPJ">
+                <input type="text" class="form-control" id="CNPJ" required maxlength="14" placeholder="Digite o CNPJ do fornecedor" name="cnpj">
             </div>
 
             <div class="form-group">
                 <label for="Contato">Contato:</label>
-                <input type="text" class="form-control" id="contato" placeholder="Didigite o Contato do forncedor" name="Contato">
+                <input type="text" class="form-control" id="contato" required maxlength="9" placeholder="Digite o Contato do fornecedor" name="contato">
             </div>
 
             <div class="form-group">
                 <label for="email">e-mail:</label>
-                <input type="email" class="form-control" id="email" placeholder="Didigite o e-mail do forncedor" name="Email">
+                <input type="email" class="form-control" id="email" required placeholder="Digite o e-mail do fornecedor" name="email">
             </div>
 
             <div class="form-group">
                 <label for="Anotações">Anotações:</label>
                     <br />
-                <textarea class="form-control" name="Anotacoes" id="anotacoes" cols="25" rows="5"></textarea>
+                <textarea class="form-control" name="anotacao" id="anotacoes" cols="25" rows="5"></textarea>
             </div>
 
             <button style="margin-top:1%;" class="btn btn-primary" type="submit">Adicionar</button>
@@ -43,9 +43,9 @@
     </div>
     <div class="col"></div>
 
-
-
-
 </section>
+
+
+<script type="text/javascript" src="~/site.js"></script>
 
 
