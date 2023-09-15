@@ -1,0 +1,19 @@
+﻿@page
+@model AgendaFornecedores.Views.Home.LoginModel
+@{
+    ViewData["Title"] = "Lista de Ações";
+  
+}
+
+<h1>Bem vindo a tela de login </h1>
+
+<form asp-controller="Usuario" asp-action="Index">
+    <label>Nome</label>
+    <input name="nomeUsuario">
+
+    <label>Senha</label>
+    <input name="senhaUsuario">
+
+    <button type="submit">Validar</button>
+</form>
+

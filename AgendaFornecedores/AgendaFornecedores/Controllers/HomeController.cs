@@ -1,6 +1,7 @@
 ﻿using AgendaFornecedores.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.DirectoryServices.AccountManagement;
 
 namespace AgendaFornecedores.Controllers
 {
@@ -25,6 +26,7 @@ namespace AgendaFornecedores.Controllers
 
         public IActionResult Formulario()
         {
+            
             return View();
         }
 
@@ -34,5 +36,9 @@ namespace AgendaFornecedores.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
+
+
+
 }
