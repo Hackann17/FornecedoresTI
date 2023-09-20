@@ -4,14 +4,15 @@
     {
         string nomeUsuario;
         string data;
-        string fornecedor;
+        string nomeFornecedor;
+        static string conexao = "Server=localhost;Port=3306;Database=MP_DOTNET6_API;User Id=root;Password=Ad#2735G";
 
-        public Acao( string nomeUsuario, string acao, string data, string fornecedor)
+        public Acao( string nomeUsuario, string acao, string data, string nomeFornecedor)
         {
             this.nomeUsuario = nomeUsuario;
             SetAcao(acao);
             this.data = data;
-            this.fornecedor = fornecedor;
+            this.nomeFornecedor = nomeFornecedor;
         }
 
         public string NomeUsuario { get => nomeUsuario; set => nomeUsuario = value; }
@@ -29,6 +30,6 @@
         }
 
         public string Data { get => data; set => data = value; }
-        public string Fornecedor { get => fornecedor; set => fornecedor = value; }
+        public string NomeFornecedor { get => nomeFornecedor; set => nomeFornecedor = value; }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace AgendaFornecedores.Models
+﻿using MySql.Data.MySqlClient;
+
+namespace AgendaFornecedores.Models
 {
     public class Fornecedores
     {
@@ -8,7 +10,8 @@
         string email;
         string anotacao;
 
-        public Fornecedores(string nome, string cnpj, string contato, string email, string anotacao) { 
+        public Fornecedores(string nome, string cnpj, string contato, string email, string anotacao)
+        {
             this.nome = nome;
             this.cnpj = cnpj;
             this.contato = contato;
@@ -21,13 +24,42 @@
         public string Contato { get => contato; set => contato = value; }
         public string Email { get => email; set => email = value; }
         public string Anotacao { get => anotacao; set => anotacao = value; }
-        //string de conecção como banco de dados
-        //StringConnection = "Server=127.0.0.1;Port=5432;Database=MP_DOTNET6_API;User Id=postgres;Password=teste123;"
+        
 
 
-        public string Cadastrar( Fornecedores fornecedor)
+        public bool Cadastrar(Fornecedores fornecedor)
         {
-            return "os dados estam aki "+fornecedor.nome + fornecedor.contato + fornecedor.email + fornecedor.anotacao;    
+            MySqlConnection con = new MySqlConnection(SQL.SConexao());
+            //INSERT INTO `agenda_fornecedores`.`grupos_permitidos` (`id`, `nome_grupos`) VALUES ('0', 'GG_TI');
+
+            try
+            {       
+                con.Open();
+                MySqlCommand mySqlCommand = new MySqlCommand("INSERT INTO fornecedores( nome, cnpj, contato, email, anotacao)" +
+                    " VALUES(@nome, @cnpj, @contato, @email, @anotacao)",con);
+
+                mySqlCommand.Parameters.AddWithValue("@nome", fornecedor.Nome);
+                mySqlCommand.Parameters.AddWithValue("@cnpj", fornecedor.Cnpj);
+                mySqlCommand.Parameters.AddWithValue("@contato", fornecedor.Contato);
+                mySqlCommand.Parameters.AddWithValue("@email", fornecedor.Email);
+                mySqlCommand.Parameters.AddWithValue("@anotacao", fornecedor.Anotacao);
+
+                mySqlCommand.ExecuteNonQuery();
+
+                con.Close();
+
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+
+            }
+            finally 
+            { 
+                con.Close(); 
+            }
         }
     }
 }

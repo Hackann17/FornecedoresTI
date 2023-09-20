@@ -1,6 +1,7 @@
 ﻿using AgendaFornecedores.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace AgendaFornecedores.Controllers
@@ -39,25 +40,29 @@ namespace AgendaFornecedores.Controllers
 
         [HttpPost]
         public IActionResult Login(string nomeUsuario, string senhaUsuario)
-      {
-            Usuario u = new Usuario();
-            string autentificacao = u.Logar(nomeUsuario, senhaUsuario);
+        {      
+            object autentificação = Usuario.Logar(nomeUsuario, senhaUsuario);
 
-            if(autentificacao == "1")
+            if(autentificação != null)
             {
-                HttpContext.Session.SetString("usuario", nomeUsuario);
-                return RedirectToAction("Index", "Home");
-            }
-            else if (autentificacao == "0")
-            {
-                TempData["mensagem"] = autentificacao;
+                if (autentificação is Exception)
+                {
+                    Exception err = (Exception)autentificação;
+                    TempData["mensagem"] = err.Message;
+                    return RedirectToAction("Index", "Home");
+                }
+
+                //serializa o atentificado em um sessao
+                
+                HttpContext.Session.SetString("usuario",JsonConvert.SerializeObject(autentificação));
                 return RedirectToAction("Index", "Home");
             }
             else
             {
-                TempData["mensagem"] = autentificacao;
+                TempData["mensagem"] = "O usuario não foi encontrado...";
                 return RedirectToAction("Index", "Home");
             }
+           
         }
 
     }

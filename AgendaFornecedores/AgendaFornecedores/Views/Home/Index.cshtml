@@ -4,6 +4,7 @@
 
     @if (Context.Session.GetString("usuario") == null)
     {
+        
         Layout = null;
         <section>
             <h1>Digite seu usuario e senha </h1>
@@ -18,11 +19,14 @@
             </form>
 
             <h2>@TempData["mensagem"]</h2>
-        </section>
+    </section>
 
-    }
-    else {
-   
+}
+else {
+
+    Usuario user = Context.Session.GetString("usuario");
+
+
         <section class="text-center">
 
             <h1 class="display-4">Agenda de fornecedores @Context.Session.GetString("usuario")</h1>
@@ -36,15 +40,28 @@
                     <p class="col"> email</p>
                     <p class="col"> contato</p>
                     <p class="col"> anotações</p>
-                    <button class="col btn btn-outline-secundary btn-light">Aleterar</button>
+
+
+
+                    
+                    <button class="col btn btn-outline-secundary btn-light">Alterar</button>
+
+                
+
                     <button class="col btn btn-outline-secundary btn-light">Deletar</button>
                 </li>
 
+
+            @{
+
+                string macaco = "monkey";
+
+                }
             
                     @for (int i = 0; i < 3; i++)
                     {
                         <li style="border:solid grey 2px;margin-bottom:1%;"class="row">
-                        <p class="col">nome @i</p>
+                        <p class="col">nome @i @macaco</p>
                             <p class="col">cnpj @i</p>
                             <p class="col"> email @i</p>
                             <p class="col"> contato @i</p>

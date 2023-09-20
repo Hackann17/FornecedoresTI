@@ -1,56 +1,111 @@
-﻿using Microsoft.CodeAnalysis.Elfie.Diagnostics;
-using Novell.Directory.Ldap;
-using System.Reflection.PortableExecutable;
-using System.Diagnostics.Eventing.Reader;
+﻿using MySql.Data.MySqlClient;
 using System.DirectoryServices;
 using DirectoryEntry = System.DirectoryServices.DirectoryEntry;
 
 namespace AgendaFornecedores.Models
-
 {
     public class Usuario
     {
-        // o preenchimento dos dados serão recolhidos atravez da sessão do windows( descobrir como)
+        string nomeUsuario;
+        string senhaUsuario;
+        bool admin;
 
-        //receberá os metodos CRUD para realizar com os fornecedores
+        public Usuario(string nomeUsuario,string senhaUsuario, bool admin) { 
+            this.nomeUsuario = nomeUsuario;
+            this.senhaUsuario = senhaUsuario;
+            this.admin = admin;
+        }
 
-        //string de conecção como banco de dados
-        //StringConnection = "Server=127.0.0.1;Port=5432;Database=MP_DOTNET6_API;User Id=postgres;Password=teste123;"
+        public string NomeUsuario { get => nomeUsuario; set => nomeUsuario = value; }
+        public string SenhaUsuario { get => senhaUsuario; set => senhaUsuario = value; }
+        public bool Admin { get => admin; set => admin = value; }
 
-        public string Logar(string nomeUsuario, string senhaUsuario)
+        public static object Logar(string nomeU, string senhaU)
         {
             // Configure a conexão LDAP
             using (DirectoryEntry entry = new("LDAP://BigBag.local"))
             {
-                entry.Username = nomeUsuario;
-                entry.Password = senhaUsuario;
+                entry.Username = nomeU;
+                entry.Password = senhaU;
                 try
                 {
                     // Tente autenticar o usuário
                     DirectorySearcher searcher = new DirectorySearcher(entry);
-                    searcher.Filter = $"(sAMAccountName={nomeUsuario})";
+                    searcher.Filter = $"(sAMAccountName={nomeU})";
+                    searcher.PropertiesToLoad.Add("sAMAccountName"); // Nome de usuário
+                    searcher.PropertiesToLoad.Add("memberOf");
                     SearchResult result = searcher.FindOne();
 
                     if (result != null)
                     {
-                        // O usuário foi autenticado com sucesso
-                        return "1";
+                        List<string> groposT = new List<string>();
+                        // Obtem os grupos de trabalho
+                        if (result.Properties.Contains("memberOf"))
+                        {
+                            foreach (string groupDn in result.Properties["memberOf"])
+                            {
+                                DirectoryEntry groupEntry = new DirectoryEntry("LDAP://" + groupDn);
+                                string groupName = groupEntry.Properties["cn"].Value.ToString();
+                                groupEntry.Close();
+                                groposT.Add(groupName);
+
+                            }
+                        }
+
+                        //verifica se o usuario está nos grupos administradores ou nao                        
+                        Usuario us = new Usuario(nomeU, senhaU,verificaGrupo(groposT));
+                        return us;
                     }
                     else
                     {
                         // Autenticação falhou
-                        // Exiba uma mensagem de erro
-                        return "0";
+                        return null;
                     }
                 }
                 catch (Exception ex)
                 {
-                    return ex.Message; // Lidere com erros de conexão LDAP
+                    return ex; // Lidere com erros de conexão LDAP
                 }
 
             }
         }
 
+        //verificando grupos de acesso do usuario no banco de dados
+        public static bool verificaGrupo(List<string> groposT)
+        {
+            MySqlConnection con = new MySqlConnection(SQL.SConexao());
+            try
+            {
+                con.Open();
+                MySqlCommand qry = new MySqlCommand("Select * from grupos_permitidos", con);
+                MySqlDataReader leitor = qry.ExecuteReader();
+
+                //enquanto o leitor lê verifica se os grupos sao iguais na lista e no banco de dados
+                while (leitor.Read())
+                {
+                    foreach (string grupo in groposT)
+                    {
+                        if (grupo == leitor["nome_grupos"].ToString())
+                        {
+                            return true;
+
+                        }
+                    }
+                }
+
+                return false;
+
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
+
+            finally
+            {
+                con.Close();
+            }
+        }
     }
 }
-
