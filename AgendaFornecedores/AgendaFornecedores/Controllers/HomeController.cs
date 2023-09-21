@@ -1,5 +1,4 @@
 ﻿using AgendaFornecedores.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -17,12 +16,12 @@ namespace AgendaFornecedores.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View(Fornecedores.listarFornecedores());
         }
 
         public IActionResult ListadeAcoes()
         {
-            return View();
+            return View(Acao.listarAcoes());
         }
 
         public IActionResult Formulario()
@@ -63,6 +62,11 @@ namespace AgendaFornecedores.Controllers
                 return RedirectToAction("Index", "Home");
             }
            
+        }
+
+        public IActionResult AdicionarGrupoAcesso()
+        {
+            return View();
         }
 
     }

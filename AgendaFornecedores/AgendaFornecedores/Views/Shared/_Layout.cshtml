@@ -1,4 +1,6 @@
-﻿@using Newtonsoft.Json;
+﻿﻿@using Microsoft.AspNetCore.Mvc;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +41,12 @@
                             </li>
                         }      
                     </ul>
-                   
+                    @if (user.Admin)
+                    {
+                        <button class=" btn btn-outline-secundary btn-light"><a class="nav-link text-dark" type="submit" asp-controller="Home" asp-action="AdicionarGrupoAcesso"> Adicionar grupo de acesso</a></button>
+
+                    }
+
                     <button class=" btn btn-outline-secundary btn-light"><a class="nav-link text-dark" type="submit" asp-controller="Fornecedor" asp-action="Formulario"> Cadastrar fornecedor</a></button>
                 </div>
             </div>

@@ -1,4 +1,8 @@
-﻿@using Newtonsoft.Json;
+﻿@model IEnumerable<AgendaFornecedores.Models.Fornecedores>
+
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Mvc;
+@using Microsoft.AspNetCore.Http;
 
 @{
     ViewData["Title"] = "Página inicial";
@@ -31,42 +35,51 @@ else {
     {
         user = JsonConvert.DeserializeObject<Usuario>(Context.Session.GetString("usuario"));
     }
-        <section class="text-center">
+    <section class="text-center">
 
-            <h1 class="display-4">Agenda de fornecedores</h1>
+        <h1 class="display-4">Agenda de fornecedores</h1>
 
-            <p>Aqui jaz o primeiro texto modificado desse projeto em .NET Core</p>
 
-            <ul>
-                <li style="border:solid grey 2px;margin-bottom:1%;" class="row">
-                    <p class="col">nome</p>
-                    <p class="col">cnpj</p>
-                    <p class="col"> email</p>
-                    <p class="col"> contato</p>
-                    <p class="col"> anotações</p>
-
-                    
-
-                </li>
-                    @for (int i = 0; i < 3; i++)
+        <ul>
+            <li style="border:solid grey 2px;margin-bottom:1%;" class="row">
+                <h5 class="col">Nome</h5>
+                <h5 class="col">CNPJ</h5>
+                <h5 class="col"> e-mail</h5>
+                <h5 class="col"> Contato</h5>
+                <h5 class="col"> Anotações</h5>
+                @if(user.Admin){
+                    <div class="col"></div>
+                    <div class="col"></div>
+                }
+      
+            </li>
+                    @foreach (Fornecedores fornecedor in Model)
                     {
                         <li style="border:solid grey 2px;margin-bottom:1%;"class="row">
-                        <p class="col">nome @i</p>
-                            <p class="col">cnpj @i</p>
-                            <p class="col"> email @i</p>
-                            <p class="col"> contato @i</p>
-                            <p class="col"> anotações @i</p>
+                            <p class="col">@fornecedor.Nome</p>
+                            <p class="col">@fornecedor.Cnpj</p>
+                            <p class="col">@fornecedor.Email</p>
+                            <p class="col">@fornecedor.Contato</p>
+                            <p class="col">@fornecedor.Anotacao</p>
                     @if (user.Admin)
                     {
+                        <form class="col btn" onsubmit="return Alterar()">
+                            <button type="submit" class="col btn btn-outline-secundary btn-light">Alterar</button>
+                        </form>
 
-                        <button class="col btn btn-outline-secundary btn-light">Alterar</button>
+                        <form class="col btn" onsubmit="return Deletar()">
+                        <!--asp-controller="Fornecedor" asp-action="DeletarFornecedor"-->
+                        <button type="submit" class="col btn btn-outline-secundary btn-light"> <a>Deletar</a></button>
+                        </form>
 
-                        <button class="col btn btn-outline-secundary btn-light">Deletar</button>
                     }
                         </li>                   
                     }
             </ul>
         </section>
     }
+
+<script type="text/javascript" src="~/site.js"></script>
+
     <!--<p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>-->
 

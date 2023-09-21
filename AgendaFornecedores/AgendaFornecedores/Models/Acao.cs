@@ -1,35 +1,90 @@
-﻿namespace AgendaFornecedores.Models
+﻿using MySql.Data.MySqlClient;
+
+namespace AgendaFornecedores.Models
 {
     public class Acao
     {
         string nomeUsuario;
         string data;
+        string action;
         string nomeFornecedor;
-        static string conexao = "Server=localhost;Port=3306;Database=agenda_fornecedores;User Id=root;Password=Ad#2735G";
 
-        public Acao( string nomeUsuario, string acao, string data, string nomeFornecedor)
+        public Acao( string nomeUsuario, string action, string data, string nomeFornecedor)
         {
             this.nomeUsuario = nomeUsuario;
-            SetAcao(acao);
+            this.action = action;
             this.data = data;
             this.nomeFornecedor = nomeFornecedor;
         }
 
         public string NomeUsuario { get => nomeUsuario; set => nomeUsuario = value; }
 
-        private string acao;
-
-        public string GetAcao()
-        {
-            return acao;
-        }
-
-        public void SetAcao(string value)
-        {
-            acao = value;
-        }
 
         public string Data { get => data; set => data = value; }
+        public string Action { get => action; set => action = value; }
+
         public string NomeFornecedor { get => nomeFornecedor; set => nomeFornecedor = value; }
+
+        public  bool AdiconarAcao( Acao action)
+        {
+            MySqlConnection con = new MySqlConnection(SQL.SConexao());
+
+            try
+            {
+                con.Open();
+
+                MySqlCommand mySqlCommand = new MySqlCommand("insert into acoes (nome_usuario, acao, data, nome_fornecedor) " +
+                    "values(@nome_usuario, @acao, @data, @nome_fornecedor)", con);
+                mySqlCommand.Parameters.AddWithValue("@nome_usuario", action.NomeUsuario);
+                mySqlCommand.Parameters.AddWithValue("@acao", action.Action);
+                mySqlCommand.Parameters.AddWithValue("@data", action.Data);
+                mySqlCommand.Parameters.AddWithValue("@nome_fornecedor", action.NomeFornecedor);
+
+                mySqlCommand.ExecuteNonQuery();
+                con.Close();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+
+            }
+            finally
+            {
+                con.Close();
+            }
+        }
+
+        public static List<Acao> listarAcoes()
+        {
+            MySqlConnection con = new MySqlConnection(SQL.SConexao());
+            List<Acao> acoes = new List<Acao>();
+
+            try
+            {
+                con.Open();
+
+                MySqlCommand mySqlCommand = new MySqlCommand("select * from acoes",con);
+                MySqlDataReader leitor = mySqlCommand.ExecuteReader();
+
+                while (leitor.Read())
+                {
+                    string nome_u = leitor["nome_usuario"].ToString();
+                    string acao = leitor["acao"].ToString();
+                    string data = leitor["data"].ToString();
+                    string nome_f = leitor["nome_fornecedor"].ToString();
+
+                    Acao acao1 = new Acao(nome_u, acao, data, nome_f);
+                    acoes.Add(acao1);
+                }
+
+                return acoes;
+
+            }
+            catch { return acoes; }
+
+            finally { con.Close(); }
+
+        }
     }
 }

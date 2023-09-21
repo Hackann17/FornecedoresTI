@@ -60,6 +60,44 @@ namespace AgendaFornecedores.Models
             { 
                 con.Close(); 
             }
+
         }
+    
+        public static List<Fornecedores> listarFornecedores()
+        {
+            MySqlConnection con = new MySqlConnection(SQL.SConexao());
+
+            List<Fornecedores> fornecedores = new List<Fornecedores>();
+            try
+            {
+                con.Open();
+
+                MySqlCommand sqlCommand = new MySqlCommand("select * from fornecedores", con);
+                MySqlDataReader leitor = sqlCommand.ExecuteReader();
+
+                while(leitor.Read())
+                {
+                    string nome = leitor["nome"].ToString();
+                    string cnpj = leitor["cnpj"].ToString();
+                    string contato = leitor["contato"].ToString();
+                    string email = leitor["email"].ToString();
+                    string anotacao = leitor["anotacao"].ToString();
+
+                    Fornecedores fornecedor = new Fornecedores(nome,cnpj, contato, email, anotacao);
+                    fornecedores.Add(fornecedor);
+                }
+
+                return fornecedores;
+
+            }
+
+            catch { return fornecedores; }
+            finally { con.Close(); }
+
+        }
+
+
+
+
     }
 }

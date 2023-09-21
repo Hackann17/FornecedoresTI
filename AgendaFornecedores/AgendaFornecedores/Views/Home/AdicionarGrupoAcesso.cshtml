@@ -1,0 +1,25 @@
+﻿@page
+@model AgendaFornecedores.Views.Home.AdicionarGrupoAcessoModel
+@{
+
+    Layout = "_Layout";
+}
+
+<section>
+
+    <h1>Adicionar grupo de acesso </h1>
+
+    <h2>Digite o nome do grupo que deseja adicionar</h2>
+
+    <form onsubmit="return adicionarGrupo()">
+        <label>Nome</label>
+        <input placeholder="Nome do grupo" name="nome_grupo"/>
+
+        <button class="btn " type="submit" >Adicoinar</button>
+    </form>
+
+
+
+
+</section>
+

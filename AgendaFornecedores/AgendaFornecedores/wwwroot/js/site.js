@@ -4,8 +4,14 @@
 // Write your JavaScript code.
 
 function ConfirmacaoCadastro() {
-    alert("macaco")
     return confirm("Os dados estao corretos? Deseja mesmo fazer o cadastro? ")
 }
 
+function Deletar() {
+    return confirm("Tem certeza de que deseja deletar esse fornecedor da lista?")
+}
+
+function Alterar() {
+    return confirm("tem certeza deque deeja alterar os dados desse forncedor")
+}
 
