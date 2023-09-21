@@ -5,7 +5,7 @@
         string nomeUsuario;
         string data;
         string nomeFornecedor;
-        static string conexao = "Server=localhost;Port=3306;Database=MP_DOTNET6_API;User Id=root;Password=Ad#2735G";
+        static string conexao = "Server=localhost;Port=3306;Database=agenda_fornecedores;User Id=root;Password=Ad#2735G";
 
         public Acao( string nomeUsuario, string acao, string data, string nomeFornecedor)
         {

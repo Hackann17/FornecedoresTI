@@ -9,7 +9,8 @@
 
     <div class="col"></div>
     <div class="container col">
-        <form method="post" asp-controller="Fornecedor" asp-action="Cadastrar" name="formularioAdicionar">
+        <!--asp-controller="Fornecedor" asp-action="Cadastrar"-->
+        <form onsubmit="return ConfirmacaoCadastro() " asp-controller="Fornecedor" asp-action="Cadastrar" method="post" name="formularioAdicionar">
 
             <div class="form-group">
               <label for="Nome">Nome:</label>
@@ -37,7 +38,7 @@
                 <textarea class="form-control" name="anotacao" id="anotacoes" cols="25" rows="5"></textarea>
             </div>
 
-            <button style="margin-top:1%;" class="btn btn-primary" type="submit">Adicionar</button>
+            <button onclick="reuturn ConfirmacaoCadastro()" style="margin-top:1%;" class="btn btn-primary" type="submit">Adicionar</button>
 
     </form>
     </div>
