@@ -23,6 +23,7 @@ namespace AgendaFornecedores.Controllers
 
             }
 
+            TempData["mesagemCadastros"] = "não foi possivel realizar o cadastro dese fornecedor..."; 
             return RedirectToAction("Formulario", "Fornecedor");
 
         }

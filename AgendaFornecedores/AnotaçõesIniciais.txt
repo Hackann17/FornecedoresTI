@@ -50,3 +50,14 @@ Visualização:
  4 mostrar lista de ações
 
 
+////retrabalho/////
+- Adicionar o parametro de grupo_de_trabalho ao modelo de usuario e fornecedor, para que uma filtragem da agenda possa ser feita
+- Adicioconar um atributo de data de vencimento de fatura ao fornecedor para enviar um e-mail de aviso previo 1 dia antes
+- Recolher o grupo de trabalho do fornecedor atraves do login/sessao do usuario e nao de forma manual pelo formulario de cadastro.
+- 
+
+
+
+
+
+

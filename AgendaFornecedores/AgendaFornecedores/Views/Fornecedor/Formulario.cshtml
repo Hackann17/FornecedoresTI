@@ -9,7 +9,6 @@
 
     <div class="col"></div>
     <div class="container col">
-        <!--asp-controller="Fornecedor" asp-action="Cadastrar"-->
         <form onsubmit="return ConfirmacaoCadastro() " asp-controller="Fornecedor" asp-action="Cadastrar" method="post" name="formularioAdicionar">
 
             <div class="form-group">
@@ -42,7 +41,7 @@
 
     </form>
 
-        <p>@TempData["cadastro"]</p>
+        <p>@TempData["mesagemCadastros"]</p>
 
     </div>
     <div class="col"></div>

@@ -1,25 +1,33 @@
-﻿@page
-@model AgendaFornecedores.Views.Home.AdicionarGrupoAcessoModel
-@{
+﻿@model IEnumerable<AgendaFornecedores.Models.Grupo_permitido>
+@using Microsoft.AspNetCore.Mvc;
 
+@{
     Layout = "_Layout";
 }
 
 <section>
 
-    <h1>Adicionar grupo de acesso </h1>
-
-    <h2>Digite o nome do grupo que deseja adicionar</h2>
+    <h1 class ="display-4"  >Adicionar grupo de acesso </h1>
 
     <form onsubmit="return adicionarGrupo()">
-        <label>Nome</label>
-        <input placeholder="Nome do grupo" name="nome_grupo"/>
+        <fieldset class="form-group">
+            <h2>Digite o nome do grupo que deseja adicionar</h2>
+            <br />
+            <label>Nome</label>
+            <input type="text" class="form-control" placeholder="Nome do grupo" name="nome_grupo" />
+            <br />
 
-        <button class="btn " type="submit" >Adicoinar</button>
+        </fieldset>
+        
+        <button class="btn btn-primary " type="submit">Adicionar</button>
     </form>
+    <br />
 
+    <h3>Grupos permitidos para administradores</h3>
+    <br />
 
-
-
+    @foreach (Grupo_permitido gP in Model)
+    {
+        <h4>@gP.Nome_grupo</h4>
+    }
 </section>
-

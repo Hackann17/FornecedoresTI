@@ -12,6 +12,10 @@ function Deletar() {
 }
 
 function Alterar() {
-    return confirm("tem certeza deque deeja alterar os dados desse forncedor")
+    return confirm("Tem certeza de que deseja alterar os dados desse fornecedor?")
+}
+
+function adicionarGrupo() {
+    return confirm("Tem certeza de qua deseja adicionar esse grupo aos administradores?")
 }
 

@@ -6,6 +6,9 @@
 
 @{
     ViewData["Title"] = "Página inicial";
+    //sessao falsa para testes
+    Context.Session.SetString("usuario", JsonConvert.SerializeObject(new Usuario("nome", "1234", true)));
+
 }
 
     @if (Context.Session.GetString("usuario") == null)
