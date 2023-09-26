@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AgendaFornecedores.Models.Fornecedores>
+﻿@model IEnumerable<AgendaFornecedores.Models.Fornecedor>
 
 @using Newtonsoft.Json;
 @using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@
 @{
     ViewData["Title"] = "Página inicial";
     //sessao falsa para testes
-    Context.Session.SetString("usuario", JsonConvert.SerializeObject(new Usuario("nome", "1234", true)));
+    //Context.Session.SetString("usuario", JsonConvert.SerializeObject(new Usuario("nome", "1234","GG_TI", true,true)));
 
 }
 
@@ -32,7 +32,7 @@
 
 }
 else {
-    Usuario user = new Usuario("", "", false);
+    Usuario user = new Usuario("", "","GG_TI", true, true);
 
     if (Context.Session.GetString("usuario") != null)
     {
@@ -49,22 +49,30 @@ else {
                 <h5 class="col">CNPJ</h5>
                 <h5 class="col"> e-mail</h5>
                 <h5 class="col"> Contato</h5>
+                <h5 class="col">Grupo de Trabalho</h5>
+                <h5 class="col">Vencimento de fatura</h5>
                 <h5 class="col"> Anotações</h5>
-                @if(user.Admin){
+                
+
+                @if(user.Midadm){
                     <div class="col"></div>
                     <div class="col"></div>
                 }
       
             </li>
-                    @foreach (Fornecedores fornecedor in Model)
+                    @foreach (Fornecedor fornecedor in Model)
                     {
                         <li style="border:solid grey 2px;margin-bottom:1%;"class="row">
                             <p class="col">@fornecedor.Nome</p>
                             <p class="col">@fornecedor.Cnpj</p>
                             <p class="col">@fornecedor.Email</p>
                             <p class="col">@fornecedor.Contato</p>
+                            <p class="col">@fornecedor.Grupo_trabalho</p>
+                            <p class="col">@fornecedor.VencimentoFatura</p>
+
                             <p class="col">@fornecedor.Anotacao</p>
-                    @if (user.Admin)
+
+                    @if (user.Midadm)
                     {
                         <form class="col btn" onsubmit="return Alterar()">
                             <button type="submit" class="col btn btn-outline-secundary btn-light">Alterar</button>

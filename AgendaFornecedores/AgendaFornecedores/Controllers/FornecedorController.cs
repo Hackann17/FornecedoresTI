@@ -6,24 +6,25 @@ namespace AgendaFornecedores.Controllers
 {
     public class FornecedorController : Controller
     {
-        public IActionResult Cadastrar(string nomeFornecedor, string cnpj, string contato, string email, string anotacao) {
+        public IActionResult Cadastrar(string nomeFornecedor, string cnpj, string contato, string email, string anotacao,string vencimentoFatura) {
 
-            Fornecedores fornecedor = new Fornecedores(nomeFornecedor, cnpj, contato, email, anotacao);
+            Usuario u = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("usuario"));
+
+            Fornecedor fornecedor = new Fornecedor(nomeFornecedor, cnpj, contato, email, anotacao, u.GrupoTrabalho, vencimentoFatura);
 
             if (fornecedor.Cadastrar(fornecedor))
             {
-                Usuario u = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("usuario"));
-
                 DateTime dataHoraAtualUtc = DateTime.UtcNow;
 
                 Acao ac = new Acao(u.NomeUsuario,"cadastro", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeFornecedor);
+
                 //salva o objeto de ação e atualiza a lista de ações
                 string objtacao = JsonConvert.SerializeObject(ac);
                 return RedirectToAction("ResgistrarAcao", "Acao", new {objtacao});
 
             }
 
-            TempData["mesagemCadastros"] = "não foi possivel realizar o cadastro dese fornecedor..."; 
+            TempData["cadastro"] = "não foi possivel realizar o cadastro desse fornecedor..."; 
             return RedirectToAction("Formulario", "Fornecedor");
 
         }
@@ -36,7 +37,7 @@ namespace AgendaFornecedores.Controllers
 
         public IActionResult Formulario()
         
-        {
+       {
             return View();
         }
 

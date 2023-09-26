@@ -8,17 +8,24 @@ namespace AgendaFornecedores.Models
     {
         string nomeUsuario;
         string senhaUsuario;
-        bool admin;
+        string grupoTrabalho;
+        bool midadm;
+        bool fulladm;
 
-        public Usuario(string nomeUsuario,string senhaUsuario, bool admin) { 
+        public Usuario(string nomeUsuario,string senhaUsuario,string grupoTrabalho, bool midadm, bool fulladm) { 
             this.nomeUsuario = nomeUsuario;
             this.senhaUsuario = senhaUsuario;
-            this.admin = admin;
+            this.grupoTrabalho = grupoTrabalho;
+            this.midadm = midadm;
+            this.fulladm = fulladm;
+            
         }
 
         public string NomeUsuario { get => nomeUsuario; set => nomeUsuario = value; }
         public string SenhaUsuario { get => senhaUsuario; set => senhaUsuario = value; }
-        public bool Admin { get => admin; set => admin = value; }
+        public bool Midadm { get => midadm; set => midadm = value; }
+        public bool Fulladm { get => fulladm; set => fulladm = value; }
+        public string GrupoTrabalho { get => grupoTrabalho; set => grupoTrabalho = value; }
 
         public static object Logar(string nomeU, string senhaU)
         {
@@ -51,10 +58,31 @@ namespace AgendaFornecedores.Models
 
                             }
                         }
+                        //verifica se o usuario está nos grupos administradores ou nao
 
-                        //verifica se o usuario está nos grupos administradores ou nao                        
-                        Usuario us = new Usuario(nomeU, senhaU,verificaGrupo(groposT));
-                        return us;
+                        GrupoTrabalho grupoT = verificaAdmin(groposT);
+
+                        if ( grupoT.Fulladm == "1")
+                        {
+                            //fulladm
+                            Usuario us = new Usuario(nomeU, senhaU,grupoT.Nome_grupo, true, true);
+                            return us;
+
+                        }
+                        else if (grupoT.Fulladm == "0")
+                        {
+                            //midadm
+                            Usuario us = new Usuario(nomeU, senhaU, grupoT.Nome_grupo, true, false);
+                            return us;
+                        }
+                        else
+                        {
+                            //usuario padrao
+                            //o GG_todos é um grupo de trabalho generico,todos os usuarios estao nesse grupo
+                            //achar modo de fazer um recolhimento mais especifico do grupo
+                            Usuario us = new Usuario(nomeU, senhaU,"GG_Todos", false, false);
+                            return us;
+                        }
                     }
                     else
                     {
@@ -66,12 +94,11 @@ namespace AgendaFornecedores.Models
                 {
                     return ex; // Lidere com erros de conexão LDAP
                 }
-
             }
         }
 
         //verificando grupos de acesso do usuario no banco de dados
-        public static bool verificaGrupo(List<string> groposT)
+        public static GrupoTrabalho verificaAdmin(List<string> groposT)
         {
             MySqlConnection con = new MySqlConnection(SQL.SConexao());
             try
@@ -87,19 +114,19 @@ namespace AgendaFornecedores.Models
                     {
                         if (grupo == leitor["nome_grupos"].ToString())
                         {
-                            return true;
-
+                            GrupoTrabalho gt = new GrupoTrabalho(leitor["nome_grupos"].ToString(), leitor["fulladm"].ToString());
+                            return gt;
                         }
                     }
                 }
 
-                return false;
+                return null;
 
             }
             catch (Exception)
             {
 
-                return false;
+                return null;
             }
 
             finally

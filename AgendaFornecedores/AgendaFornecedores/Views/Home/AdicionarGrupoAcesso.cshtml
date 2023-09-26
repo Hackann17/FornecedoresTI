@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AgendaFornecedores.Models.Grupo_permitido>
+﻿@model IEnumerable<AgendaFornecedores.Models.GrupoTrabalho>
 @using Microsoft.AspNetCore.Mvc;
 
 @{
@@ -26,7 +26,7 @@
     <h3>Grupos permitidos para administradores</h3>
     <br />
 
-    @foreach (Grupo_permitido gP in Model)
+    @foreach (GrupoTrabalho gP in Model)
     {
         <h4>@gP.Nome_grupo</h4>
     }

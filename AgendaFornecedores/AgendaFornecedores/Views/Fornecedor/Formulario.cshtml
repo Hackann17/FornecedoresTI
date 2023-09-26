@@ -32,16 +32,22 @@
             </div>
 
             <div class="form-group">
+                <label for="vencimentoFatura">Dia de vencimento de fatura:</label>
+                <input type="date" class="form-control" id="email" required maxlength="2" placeholder="Digite o dia de vencimento" name="vencimentoFatura">
+            </div>
+
+            <div class="form-group">
                 <label for="Anotações">Anotações:</label>
                     <br />
                 <textarea class="form-control" name="anotacao" id="anotacoes" cols="25" rows="5"></textarea>
             </div>
 
+
             <button onclick="reuturn ConfirmacaoCadastro()" style="margin-top:1%;" class="btn btn-primary" type="submit">Adicionar</button>
 
     </form>
 
-        <p>@TempData["mesagemCadastros"]</p>
+        <p>@TempData["cadastro"]</p>
 
     </div>
     <div class="col"></div>

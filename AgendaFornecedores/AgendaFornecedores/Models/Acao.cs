@@ -33,16 +33,29 @@ namespace AgendaFornecedores.Models
             {
                 con.Open();
 
-                MySqlCommand mySqlCommand = new MySqlCommand("insert into acoes (nome_usuario, acao, data, nome_fornecedor) " +
-                    "values(@nome_usuario, @acao, @data, @nome_fornecedor)", con);
-                mySqlCommand.Parameters.AddWithValue("@nome_usuario", action.NomeUsuario);
-                mySqlCommand.Parameters.AddWithValue("@acao", action.Action);
-                mySqlCommand.Parameters.AddWithValue("@data", action.Data);
-                mySqlCommand.Parameters.AddWithValue("@nome_fornecedor", action.NomeFornecedor);
+                List<string> colunas = new List<string> { "nome_usuario", "acao", "data", "nome_fornecedor"};
+                List<string> valores = new List<string> { action.NomeUsuario, action.Action, action.Data, action.NomeFornecedor };
 
-                mySqlCommand.ExecuteNonQuery();
-                con.Close();
-                return true;
+                if(SQL.SCadastrar("acoes", colunas, valores))
+                {
+                    /*
+                                    MySqlCommand mySqlCommand = new MySqlCommand("insert into acoes (nome_usuario, acao, data, nome_fornecedor) " +
+                                        "values(@nome_usuario, @acao, @data, @nome_fornecedor)", con);
+                                    mySqlCommand.Parameters.AddWithValue("@nome_usuario", action.NomeUsuario);
+                                    mySqlCommand.Parameters.AddWithValue("@acao", action.Action);
+                                    mySqlCommand.Parameters.AddWithValue("@data", action.Data);
+                                    mySqlCommand.Parameters.AddWithValue("@nome_fornecedor", action.NomeFornecedor);
+
+                                    mySqlCommand.ExecuteNonQuery();
+                    */
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+
             }
             catch (Exception)
             {

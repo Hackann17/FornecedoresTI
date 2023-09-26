@@ -6,22 +6,25 @@ using System.Drawing;
 
 namespace AgendaFornecedores.Models
 {
-    public class Fornecedores
+    public class Fornecedor
     {
         string nome;
         string cnpj;
         string contato;
         string email;
         string anotacao;
-        
+        string grupoTrabalho;
+        string vencimentoFatura;
 
-        public Fornecedores(string nome, string cnpj, string contato, string email, string anotacao)
+        public Fornecedor(string nome, string cnpj, string contato, string email, string anotacao, string grupo_trabalho, string vencimentoFatura)
         {
             this.nome = nome;
             this.cnpj = cnpj;
             this.contato = contato;
             this.email = email;
             this.anotacao = anotacao;
+            this.grupoTrabalho = grupo_trabalho;
+            this.vencimentoFatura = vencimentoFatura;
         }
 
         public string Nome { get => nome; set => nome = value; }
@@ -29,10 +32,10 @@ namespace AgendaFornecedores.Models
         public string Contato { get => contato; set => contato = value; }
         public string Email { get => email; set => email = value; }
         public string Anotacao { get => anotacao; set => anotacao = value; }
+        public string Grupo_trabalho { get => grupoTrabalho; set => grupoTrabalho = value; }
+        public string VencimentoFatura { get => vencimentoFatura; set => vencimentoFatura = value; }
 
-
-
-        public bool Cadastrar(Fornecedores fornecedor)
+        public bool Cadastrar(Fornecedor fornecedor)
         {
             MySqlConnection con = new MySqlConnection(SQL.SConexao());
 
@@ -46,19 +49,17 @@ namespace AgendaFornecedores.Models
 
                 if (SQL.Procurar("fornecedores",colunas, parametros))
                 {
-                    //se nenhum fornecedor com essa caracteristicas for achado ele 
-                    MySqlCommand mySqlCommand = new MySqlCommand("INSERT INTO fornecedores( nome, cnpj, contato, email, anotacao)" +
-                    " VALUES(@nome, @cnpj, @contato, @email, @anotacao)", con);
+                    colunas = new List<string>{ "nome", "cnpj","contato","email", "anotacao", "grupo_trabalho", "vencimento_fatura"};
 
-                    mySqlCommand.Parameters.AddWithValue("@nome", fornecedor.Nome);
-                    mySqlCommand.Parameters.AddWithValue("@cnpj", fornecedor.Cnpj);
-                    mySqlCommand.Parameters.AddWithValue("@contato", fornecedor.Contato);
-                    mySqlCommand.Parameters.AddWithValue("@email", fornecedor.Email);
-                    mySqlCommand.Parameters.AddWithValue("@anotacao", fornecedor.Anotacao);
+                    parametros = new List<string> { fornecedor.Nome, fornecedor.Cnpj, fornecedor.Contato, fornecedor.Email, 
+                        fornecedor.Anotacao, fornecedor.Grupo_trabalho, fornecedor.VencimentoFatura };
 
-                    mySqlCommand.ExecuteNonQuery();
-                   
-                    return true;
+                    if (SQL.SCadastrar("fornecedores", colunas, parametros))
+                    {
+                        return true;
+                    }
+
+                    return false;
                 }
 
                 
@@ -71,15 +72,15 @@ namespace AgendaFornecedores.Models
             }
             finally
             {
-                //con.Close();
+                con.Close();
             }
 
         }
-        public static List<Fornecedores> listarFornecedores()
+        public static List<Fornecedor> listarFornecedores()
         {
             MySqlConnection con = new MySqlConnection(SQL.SConexao());
 
-            List<Fornecedores> fornecedores = new List<Fornecedores>();
+            List<Fornecedor> fornecedores = new List<Fornecedor>();
             try
             {
                 con.Open();
@@ -94,8 +95,9 @@ namespace AgendaFornecedores.Models
                     string contato = leitor["contato"].ToString();
                     string email = leitor["email"].ToString();
                     string anotacao = leitor["anotacao"].ToString();
+                    string grupoTrab = leitor["grupo_trabalho"].ToString();
 
-                    Fornecedores fornecedor = new Fornecedores(nome, cnpj, contato, email, anotacao);
+                    Fornecedor fornecedor = new Fornecedor(nome, cnpj, contato, email, anotacao,grupoTrab,"");
                     fornecedores.Add(fornecedor);
                 }
 

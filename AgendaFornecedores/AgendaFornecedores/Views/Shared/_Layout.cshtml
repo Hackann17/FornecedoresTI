@@ -13,7 +13,7 @@
 </head>
 <body>
     @{
-        Usuario user = new Usuario("", "", false);
+        Usuario user = new Usuario("", "","", true,true);
 
         if (Context.Session.GetString("usuario") != null)
         {
@@ -34,14 +34,14 @@
                         <li class="nav-item">
                         </li>
 
-                        @if(user.Admin)
+                        @if(user.Midadm)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Home" asp-action="ListadeAcoes">Lista de ações</a>
                             </li>
                         }      
                     </ul>
-                    @if (user.Admin)
+                    @if (user.Fulladm)
                     {
                         <button style="margin-right:1%;" class=" btn btn-outline-secundary btn-light"><a class="nav-link text-dark" type="submit" asp-controller="Home" asp-action="AdicionarGrupoAcesso"> Adicionar grupo de acesso</a></button>
                     }

@@ -16,7 +16,7 @@ namespace AgendaFornecedores.Controllers
 
         public IActionResult Index()
         {
-            return View(Fornecedores.listarFornecedores());
+            return View(Fornecedor.listarFornecedores());
         }
 
         public IActionResult ListadeAcoes()
@@ -66,7 +66,7 @@ namespace AgendaFornecedores.Controllers
 
         public IActionResult AdicionarGrupoAcesso()
         {
-            return View(Grupo_permitido.listarGrupos());
+            return View(GrupoTrabalho.listarGrupos());
         }
 
     }

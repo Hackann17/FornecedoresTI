@@ -2,21 +2,23 @@
 
 namespace AgendaFornecedores.Models
 {
-    public class Grupo_permitido
+    public class GrupoTrabalho
     {
         string nome_grupo;
-
-       public Grupo_permitido(string nome_grupo)
+        string fulladm;
+       public GrupoTrabalho(string nome_grupo, string fulladm)
         {
             this.nome_grupo = nome_grupo;  
+            this.fulladm = fulladm;
         }
 
         public string Nome_grupo { get => nome_grupo; set => nome_grupo = value; }
+        public string Fulladm { get => fulladm; set => fulladm = value; }
 
-        public static List<Grupo_permitido> listarGrupos()
+        public static List<GrupoTrabalho> listarGrupos()
         {
             MySqlConnection con = new MySqlConnection(SQL.SConexao());
-            List<Grupo_permitido> grupos = new List<Grupo_permitido>();
+            List<GrupoTrabalho> grupos = new List<GrupoTrabalho>();
             try
             {
                 con.Open();
@@ -25,7 +27,7 @@ namespace AgendaFornecedores.Models
                 MySqlDataReader leitor = qry.ExecuteReader();
                 while (leitor.Read())
                 {
-                   Grupo_permitido gp = new Grupo_permitido( leitor["nome_grupos"].ToString());
+                   GrupoTrabalho gp = new GrupoTrabalho(leitor["nome_grupos"].ToString(), leitor["fulladm"].ToString());
                    grupos.Add(gp);
                 }
                 return grupos; 

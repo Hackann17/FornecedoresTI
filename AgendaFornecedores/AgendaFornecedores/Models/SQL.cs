@@ -45,6 +45,59 @@ namespace AgendaFornecedores.Models
             
         }
 
+        public static bool SCadastrar(string tabela, List<string> colunas, List<string> valores)
+        {
+            string co = SConexao();
+            MySqlConnection con = new MySqlConnection(co);
+            try
+            {
+                //MODELANDO A STRING DE COMANDO SQL
+                string comando = $"INSERT INTO {tabela}(";
+                string dados = "VALUES(";
+
+                for (int i = 0; i < colunas.Count; i++)
+                {
+                    if (i == colunas.Count-1)
+                    {
+                        comando += $"{colunas[i]}) ";
+                        dados += $"@{colunas[i]})";
+                    }
+                    else
+                    {
+                        comando += $"{colunas[i]}, ";
+                        dados += $"@{colunas[i]}, ";
+                    }
+
+                }
+
+                comando += dados;
+
+                con.Open();
+                MySqlCommand mySqlCommand = new MySqlCommand(comando,con);
+
+                for (int i = 0; i < valores.Count; i++)
+                {
+                    mySqlCommand.Parameters.AddWithValue($"@{colunas[i]}", valores[i]);
+                }
+
+                mySqlCommand.ExecuteNonQuery();
+
+                return true;
+            }
+            catch(Exception ex)
+            { return false; 
+            }
+            finally 
+            {
+               con.Close();
+            }
+
+        }
+
+
+
+
+
 
     }
 }
