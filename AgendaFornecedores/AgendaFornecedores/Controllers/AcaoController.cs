@@ -16,10 +16,8 @@ namespace AgendaFornecedores.Controllers
                 return RedirectToAction("Formulario", "Fornecedor");
 
             }
-
             TempData["cadastro"] = "Houve um erro no cadastro...";
             return RedirectToAction("Formulario", "Fornecedor");
-
         }
     }
 }

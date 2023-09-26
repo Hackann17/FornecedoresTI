@@ -29,11 +29,19 @@ namespace AgendaFornecedores.Controllers
 
         }
 
-        public IActionResult DeletarFornecedor()
+        public IActionResult Deletar(string cnpj)
         {
-            return View();
-        }
+            Fornecedor fornecedor = new();
 
+            if (fornecedor.DeletarFornecedor(cnpj))
+            {
+                TempData["deletar"] = "Fornecedor deletado com sucesso";
+                return RedirectToAction("Index", "Home");
+            }
+
+            TempData["deletar"] = "Falha ao deletar o fornecedor";
+            return RedirectToAction("Index", "Home"); ;
+        }
 
         public IActionResult Formulario()
         

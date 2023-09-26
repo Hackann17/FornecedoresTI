@@ -9,6 +9,7 @@ namespace AgendaFornecedores.Models
         string action;
         string nomeFornecedor;
 
+        public Acao() { }
         public Acao( string nomeUsuario, string action, string data, string nomeFornecedor)
         {
             this.nomeUsuario = nomeUsuario;
@@ -37,17 +38,7 @@ namespace AgendaFornecedores.Models
                 List<string> valores = new List<string> { action.NomeUsuario, action.Action, action.Data, action.NomeFornecedor };
 
                 if(SQL.SCadastrar("acoes", colunas, valores))
-                {
-                    /*
-                                    MySqlCommand mySqlCommand = new MySqlCommand("insert into acoes (nome_usuario, acao, data, nome_fornecedor) " +
-                                        "values(@nome_usuario, @acao, @data, @nome_fornecedor)", con);
-                                    mySqlCommand.Parameters.AddWithValue("@nome_usuario", action.NomeUsuario);
-                                    mySqlCommand.Parameters.AddWithValue("@acao", action.Action);
-                                    mySqlCommand.Parameters.AddWithValue("@data", action.Data);
-                                    mySqlCommand.Parameters.AddWithValue("@nome_fornecedor", action.NomeFornecedor);
-
-                                    mySqlCommand.ExecuteNonQuery();
-                    */
+                {   
                     return true;
                 }
                 else

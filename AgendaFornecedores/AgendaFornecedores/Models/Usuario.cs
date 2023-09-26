@@ -12,6 +12,7 @@ namespace AgendaFornecedores.Models
         bool midadm;
         bool fulladm;
 
+        public Usuario() { }
         public Usuario(string nomeUsuario,string senhaUsuario,string grupoTrabalho, bool midadm, bool fulladm) { 
             this.nomeUsuario = nomeUsuario;
             this.senhaUsuario = senhaUsuario;
@@ -55,40 +56,38 @@ namespace AgendaFornecedores.Models
                                 string groupName = groupEntry.Properties["cn"].Value.ToString();
                                 groupEntry.Close();
                                 groposT.Add(groupName);
-
                             }
                         }
                         //verifica se o usuario está nos grupos administradores ou nao
 
-                        GrupoTrabalho grupoT = verificaAdmin(groposT);
-
-                        if ( grupoT.Fulladm == "1")
+                        GrupoPermitido grupoT = verificaAdmin(groposT);
+                        if(grupoT != null)
                         {
-                            //fulladm
-                            Usuario us = new Usuario(nomeU, senhaU,grupoT.Nome_grupo, true, true);
-                            return us;
-
-                        }
-                        else if (grupoT.Fulladm == "0")
-                        {
-                            //midadm
-                            Usuario us = new Usuario(nomeU, senhaU, grupoT.Nome_grupo, true, false);
-                            return us;
+                            if (grupoT.Fulladm == "1")
+                            {
+                                //fulladm
+                                Usuario us = new Usuario(nomeU, senhaU, grupoT.Nome_grupo, true, true);
+                                return us;
+                            }
+                            else if (grupoT.Fulladm == "0")
+                            {
+                                //midadm
+                                Usuario us = new Usuario(nomeU, senhaU, grupoT.Nome_grupo, true, false);
+                                return us;
+                            }
+            
                         }
                         else
                         {
-                            //usuario padrao
-                            //o GG_todos é um grupo de trabalho generico,todos os usuarios estao nesse grupo
-                            //achar modo de fazer um recolhimento mais especifico do grupo
-                            Usuario us = new Usuario(nomeU, senhaU,"GG_Todos", false, false);
-                            return us;
+                        //usuario padrao
+                        //o GG_todos é um grupo de trabalho generico,todos os usuarios estao nesse grupo
+                        //achar modo de fazer um recolhimento mais especifico do grupo
+                        Usuario us = new Usuario(nomeU, senhaU, "GG_Todos", false, false);
+                        return us;
                         }
                     }
-                    else
-                    {
-                        // Autenticação falhou
-                        return null;
-                    }
+
+                    return null;
                 }
                 catch (Exception ex)
                 {
@@ -96,9 +95,8 @@ namespace AgendaFornecedores.Models
                 }
             }
         }
-
         //verificando grupos de acesso do usuario no banco de dados
-        public static GrupoTrabalho verificaAdmin(List<string> groposT)
+        public static GrupoPermitido verificaAdmin(List<string> groposT)
         {
             MySqlConnection con = new MySqlConnection(SQL.SConexao());
             try
@@ -114,7 +112,7 @@ namespace AgendaFornecedores.Models
                     {
                         if (grupo == leitor["nome_grupos"].ToString())
                         {
-                            GrupoTrabalho gt = new GrupoTrabalho(leitor["nome_grupos"].ToString(), leitor["fulladm"].ToString());
+                            GrupoPermitido gt = new GrupoPermitido(leitor["nome_grupos"].ToString(), leitor["fulladm"].ToString());
                             return gt;
                         }
                     }

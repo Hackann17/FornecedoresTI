@@ -7,7 +7,7 @@
 @{
     ViewData["Title"] = "Página inicial";
     //sessao falsa para testes
-    //Context.Session.SetString("usuario", JsonConvert.SerializeObject(new Usuario("nome", "1234","GG_TI", true,true)));
+    Context.Session.SetString("usuario", JsonConvert.SerializeObject(new Usuario("nome", "1234","GG_TI", true,true)));
 
 }
 
@@ -78,9 +78,10 @@ else {
                             <button type="submit" class="col btn btn-outline-secundary btn-light">Alterar</button>
                         </form>
 
-                        <form class="col btn" onsubmit="return Deletar()">
+                        <form class="col btn" onsubmit="return Deletar()" asp-controller="Fornecedor" asp-action="Deletar">
                         <!--asp-controller="Fornecedor" asp-action="DeletarFornecedor"-->
-                        <button type="submit" class="col btn btn-outline-secundary btn-light"> <a>Deletar</a></button>
+                        <input value="@fornecedor.Cnpj" hidden name="cnpj">
+                        <button  type="submit" class="col btn btn-outline-secundary btn-light" > Deletar </button>
                         </form>
 
                     }

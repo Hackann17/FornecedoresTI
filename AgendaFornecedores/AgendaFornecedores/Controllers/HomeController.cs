@@ -66,7 +66,7 @@ namespace AgendaFornecedores.Controllers
 
         public IActionResult AdicionarGrupoAcesso()
         {
-            return View(GrupoTrabalho.listarGrupos());
+            return View(GrupoPermitido.listarGrupos());
         }
 
     }

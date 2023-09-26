@@ -69,7 +69,6 @@ namespace AgendaFornecedores.Models
                     }
 
                 }
-
                 comando += dados;
 
                 con.Open();
@@ -91,10 +90,28 @@ namespace AgendaFornecedores.Models
             {
                con.Close();
             }
-
         }
 
+        //DELETE FROM Customers WHERE CustomerName='Alfreds Futterkiste';
+        public static bool SDeletar(string tabela, string coluna,string parametro )
+        {
+            MySqlConnection co = new MySqlConnection(SQL.SConexao());
+            try
+            {
+                co.Open();
+                MySqlCommand mySqlCommand = new MySqlCommand();
 
+
+
+
+                return true;
+            }
+            catch (Exception ex) { return false; }
+
+            finally { co.Close(); }
+
+
+        }
 
 
 

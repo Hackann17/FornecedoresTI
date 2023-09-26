@@ -16,6 +16,7 @@ namespace AgendaFornecedores.Models
         string grupoTrabalho;
         string vencimentoFatura;
 
+        public Fornecedor() { }
         public Fornecedor(string nome, string cnpj, string contato, string email, string anotacao, string grupo_trabalho, string vencimentoFatura)
         {
             this.nome = nome;
@@ -38,37 +39,29 @@ namespace AgendaFornecedores.Models
         public bool Cadastrar(Fornecedor fornecedor)
         {
             MySqlConnection con = new MySqlConnection(SQL.SConexao());
-
             //INSERT INTO `agenda_fornecedores`.`grupos_permitidos` (`id`, `nome_grupos`) VALUES ('0', 'GG_TI');
             try
             {
                 con.Open();
 
-                 List<string> colunas = new List<string> { "cnpj"};
+                List<string> colunas = new List<string> { "cnpj"};
                 List<string> parametros = new List<string> { fornecedor.Cnpj };
 
                 if (SQL.Procurar("fornecedores",colunas, parametros))
                 {
                     colunas = new List<string>{ "nome", "cnpj","contato","email", "anotacao", "grupo_trabalho", "vencimento_fatura"};
-
                     parametros = new List<string> { fornecedor.Nome, fornecedor.Cnpj, fornecedor.Contato, fornecedor.Email, 
                         fornecedor.Anotacao, fornecedor.Grupo_trabalho, fornecedor.VencimentoFatura };
 
-                    if (SQL.SCadastrar("fornecedores", colunas, parametros))
-                    {
-                        return true;
-                    }
-
+                    if (SQL.SCadastrar("fornecedores", colunas, parametros))return true;
+ 
                     return false;
-                }
-
-                
+                }        
                 return false;
             }
             catch (Exception ex)
             {
                 return false;
-
             }
             finally
             {
@@ -96,8 +89,9 @@ namespace AgendaFornecedores.Models
                     string email = leitor["email"].ToString();
                     string anotacao = leitor["anotacao"].ToString();
                     string grupoTrab = leitor["grupo_trabalho"].ToString();
+                    string vencimento = leitor["vencimento_fatura"].ToString();
 
-                    Fornecedor fornecedor = new Fornecedor(nome, cnpj, contato, email, anotacao,grupoTrab,"");
+                    Fornecedor fornecedor = new(nome, cnpj, contato, email, anotacao,grupoTrab,vencimento);
                     fornecedores.Add(fornecedor);
                 }
 
@@ -109,6 +103,33 @@ namespace AgendaFornecedores.Models
             finally { con.Close(); }
 
         }
+
+        public bool DeletarFornecedor(string cnpj)
+        {
+            MySqlConnection con = new(SQL.SConexao());
+
+            try
+            {
+                con.Open();
+
+               
+
+
+
+
+                return true;
+
+            }
+            catch (Exception ex) { return false; }
+            finally
+            {
+                con.Close();
+            }
+
+
+        }
+
+
 
     }
 }

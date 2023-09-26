@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AgendaFornecedores.Models.GrupoTrabalho>
+﻿@model IEnumerable<AgendaFornecedores.Models.GrupoPermitido>
 @using Microsoft.AspNetCore.Mvc;
 
 @{
@@ -9,12 +9,14 @@
 
     <h1 class ="display-4"  >Adicionar grupo de acesso </h1>
 
-    <form onsubmit="return adicionarGrupo()">
+    <form onsubmit="return adicionarGrupo()" asp-controller="GrupoTrabalho" asp-action="AdicionarGrupoAcesso">
         <fieldset class="form-group">
-            <h2>Digite o nome do grupo que deseja adicionar</h2>
+            <h3>Digite o nome do grupo que deseja adicionar</h3>
             <br />
             <label>Nome</label>
-            <input type="text" class="form-control" placeholder="Nome do grupo" name="nome_grupo" />
+            <input type="text" class="form-control" required placeholder="Nome do grupo" name="nome_grupo" />
+
+            <input type="radio" value="1"  name="fulladm" /> Full Administrador
             <br />
 
         </fieldset>
@@ -23,11 +25,11 @@
     </form>
     <br />
 
-    <h3>Grupos permitidos para administradores</h3>
+    <h4>Grupos permitidos para administradores</h4>
     <br />
 
-    @foreach (GrupoTrabalho gP in Model)
+    @foreach (GrupoPermitido gP in Model)
     {
-        <h4>@gP.Nome_grupo</h4>
+        <h5>@gP.Nome_grupo</h5>
     }
 </section>
