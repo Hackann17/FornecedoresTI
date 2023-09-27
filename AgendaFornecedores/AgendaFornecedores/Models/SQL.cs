@@ -1,4 +1,6 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Relational;
 
 namespace AgendaFornecedores.Models
 { 
@@ -30,10 +32,10 @@ namespace AgendaFornecedores.Models
                             return true;
                         }
                     }
-                    return false;
+                   
                 }
 
-                return true;
+                return false;
             }
             
             catch (Exception ex)
@@ -67,8 +69,8 @@ namespace AgendaFornecedores.Models
                         comando += $"{colunas[i]}, ";
                         dados += $"@{colunas[i]}, ";
                     }
-
                 }
+
                 comando += dados;
 
                 con.Open();
@@ -93,18 +95,27 @@ namespace AgendaFornecedores.Models
         }
 
         //DELETE FROM Customers WHERE CustomerName='Alfreds Futterkiste';
-        public static bool SDeletar(string tabela, string coluna,string parametro )
+        public static bool SDeletar(string tabela, List <string> colunas, List<string> parametros )
         {
             MySqlConnection co = new MySqlConnection(SQL.SConexao());
             try
             {
-                co.Open();
-                MySqlCommand mySqlCommand = new MySqlCommand();
+                //modelando string de comando
+                string comDel = $"DELETE FROM {tabela} WHERE ";
 
+                for (int i = 0; i < colunas.Count ; i++)
+                {
+                    comDel += $" {colunas[i]} = @{parametros[i]}";
 
+                    co.Open();
+                    MySqlCommand mySqlCommand = new MySqlCommand(comDel, co);
+                    mySqlCommand.Parameters.AddWithValue($"@{parametros[i]}", parametros[i]);
 
-
+                    mySqlCommand.ExecuteNonQuery();
+                }
                 return true;
+
+
             }
             catch (Exception ex) { return false; }
 
@@ -112,9 +123,5 @@ namespace AgendaFornecedores.Models
 
 
         }
-
-
-
-
     }
 }

@@ -28,8 +28,30 @@
     <h4>Grupos permitidos para administradores</h4>
     <br />
 
-    @foreach (GrupoPermitido gP in Model)
-    {
-        <h5>@gP.Nome_grupo</h5>
-    }
 </section>
+<section>
+
+    <table>
+        @{
+            //pensar numa forma de realizar uma quebra de coluna a cada 5 grupos
+            int grupos = 0;
+            foreach (GrupoPermitido gP in Model)
+            {
+                grupos ++;
+                <tr>
+
+                    <td>
+                        <h5>@gP.Nome_grupo</h5>
+                    </td>
+
+                </tr>
+            }
+        }
+       
+    </table>
+
+</section>
+
+
+
+    

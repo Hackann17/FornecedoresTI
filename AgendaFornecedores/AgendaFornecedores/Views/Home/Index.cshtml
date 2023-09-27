@@ -27,7 +27,7 @@
                 <button type="submit">Validar</button>
             </form>
 
-            <h2>@TempData["mensagem"]</h2>
+        <h2>@TempData["acao"]</h2>
     </section>
 
 }
@@ -42,14 +42,12 @@ else {
 
         <h1 class="display-4">Agenda de fornecedores</h1>
 
-
         <ul>
-            <li style="border:solid grey 2px;margin-bottom:1%;" class="row">
+            <li style="margin-bottom:1%; background-color:rgb(128, 133, 140); color:white;" class="row">
                 <h5 class="col">Nome</h5>
                 <h5 class="col">CNPJ</h5>
                 <h5 class="col"> e-mail</h5>
                 <h5 class="col"> Contato</h5>
-                <h5 class="col">Grupo de Trabalho</h5>
                 <h5 class="col">Vencimento de fatura</h5>
                 <h5 class="col"> Anotações</h5>
                 
@@ -60,35 +58,40 @@ else {
                 }
       
             </li>
-                    @foreach (Fornecedor fornecedor in Model)
-                    {
-                        <li style="border:solid grey 2px;margin-bottom:1%;"class="row">
-                            <p class="col">@fornecedor.Nome</p>
-                            <p class="col">@fornecedor.Cnpj</p>
-                            <p class="col">@fornecedor.Email</p>
-                            <p class="col">@fornecedor.Contato</p>
-                            <p class="col">@fornecedor.Grupo_trabalho</p>
-                            <p class="col">@fornecedor.VencimentoFatura</p>
+            @foreach (Fornecedor fornecedor in Model)
+            {
+                 string[] atributos = { fornecedor.Nome, fornecedor.Cnpj, fornecedor.Email, fornecedor.Contato,
+                  fornecedor.VencimentoFatura,fornecedor.Anotacao };
 
-                            <p class="col">@fornecedor.Anotacao</p>
+                <li class="row">
+                    @for(int i = 0 ; i < atributos.Length; i++)
+                    {
+                        <p class="col text-start">@atributos[i]</p>
+                    }
 
                     @if (user.Midadm)
                     {
-                        <form class="col btn" onsubmit="return Alterar()">
+                        <form class="col btn" onsubmit="return Alterar()" asp-controller="Fornecedor" asp-action="Alterar">
+                            <input value="@fornecedor.Cnpj" hidden name="cnpj">
+                            <input value="@fornecedor.Nome" hidden name="nomeF">
+
                             <button type="submit" class="col btn btn-outline-secundary btn-light">Alterar</button>
                         </form>
 
                         <form class="col btn" onsubmit="return Deletar()" asp-controller="Fornecedor" asp-action="Deletar">
                         <!--asp-controller="Fornecedor" asp-action="DeletarFornecedor"-->
                         <input value="@fornecedor.Cnpj" hidden name="cnpj">
+                        <input value="@fornecedor.Nome" hidden name="nomeF">
+
                         <button  type="submit" class="col btn btn-outline-secundary btn-light" > Deletar </button>
                         </form>
-
                     }
-                        </li>                   
-                    }
+                </li>                   
+             }
+               
             </ul>
         </section>
+    <p class="text-end" style="color:red;">@TempData["deletar"]</p>
     }
 
 <script type="text/javascript" src="~/site.js"></script>

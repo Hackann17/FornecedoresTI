@@ -112,22 +112,31 @@ namespace AgendaFornecedores.Models
             {
                 con.Open();
 
-               
-
-
-
-
-                return true;
-
+                List<string> colunas = new List<string>{"cnpj"};
+                List<string> parametros = new List<string> { cnpj };
+                if(SQL.SDeletar("fornecedores",colunas,parametros))return true;
+                return false;
             }
-            catch (Exception ex) { return false; }
+            catch (Exception ex)
+            { return false; }
             finally
             {
                 con.Close();
             }
-
-
         }
+
+        public bool AlterarFornecedor(string cnpj, string nomeF)
+        {
+            try
+            {
+                List<string> colunas = new List<string>{"cnpj"};
+                List<string> valores = new List<string> { };
+                return true;
+            }
+            catch(Exception ex) { return false; }
+        }
+
+
 
 
 

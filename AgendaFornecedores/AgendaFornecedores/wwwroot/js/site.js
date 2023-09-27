@@ -18,4 +18,3 @@ function Alterar() {
 function adicionarGrupo() {
     return confirm("Tem certeza de qua deseja adicionar esse grupo aos administradores?")
 }
-

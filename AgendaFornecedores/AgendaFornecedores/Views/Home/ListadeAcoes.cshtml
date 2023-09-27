@@ -6,12 +6,37 @@
 }
 <h1 class=" text-center display-4">@ViewData["Title"]</h1>
 
-<ul>
-@{
-    foreach (Acao act in Model)
-    {
-      <li class="row" > <h2 class="col" >@act.NomeUsuario @act.Action @act.NomeFornecedor @act.Data</h2></li>
-       
-    }
-}
-</ul>
+
+<section class="row">
+
+    <table class="col">
+        <tr class="row-cols-auto">
+            @{
+                string[] parametros = { "Usuario", "Ação", "Fornecedor", "Data/Hora" };
+                for (int i = 0; i < parametros.Length; i++)
+                {
+                    <th class="col">@parametros[i]</th>
+                }
+            }
+        </tr>
+
+        <!--para cada linha da tabela serao geradas novas celulas para cada atributo do objeto-->
+        @foreach (Acao act in Model)
+        {
+            string[] atributos = {act.NomeUsuario, act.Action, act.NomeFornecedor, act.Data };
+
+            <tr class="row-cols-auto">
+
+                @for (int i = 0; i < atributos.Length; i++)
+                {
+                    <td class="col">@atributos[@i]</td>
+
+                    if (i == 20) break;
+                }
+            </tr>
+        }
+    </table>
+
+</section>
+
+   

@@ -16,36 +16,53 @@ namespace AgendaFornecedores.Controllers
             {
                 DateTime dataHoraAtualUtc = DateTime.UtcNow;
 
-                Acao ac = new Acao(u.NomeUsuario,"cadastro", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeFornecedor);
+                Acao ac = new Acao(u.NomeUsuario,"cadastrar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeFornecedor);
 
                 //salva o objeto de ação e atualiza a lista de ações
                 string objtacao = JsonConvert.SerializeObject(ac);
-                return RedirectToAction("ResgistrarAcao", "Acao", new {objtacao});
+                return RedirectToAction("RegistrarAcao", "Acao", new {objtacao});
 
             }
-
-            TempData["cadastro"] = "não foi possivel realizar o cadastro desse fornecedor..."; 
             return RedirectToAction("Formulario", "Fornecedor");
 
         }
 
-        public IActionResult Deletar(string cnpj)
+        public IActionResult Deletar(string cnpj, string nomeF)
         {
             Fornecedor fornecedor = new();
-
             if (fornecedor.DeletarFornecedor(cnpj))
             {
-                TempData["deletar"] = "Fornecedor deletado com sucesso";
-                return RedirectToAction("Index", "Home");
-            }
+                Usuario us = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("usuario"));
+                DateTime dataHoraAtualUtc = DateTime.Now;
 
-            TempData["deletar"] = "Falha ao deletar o fornecedor";
+                Acao ac = new Acao(us.NomeUsuario, "deletar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeF);
+
+                string objtacao = JsonConvert.SerializeObject(ac);
+                return RedirectToAction("RegistrarAcao", "Acao", new {objtacao});
+            }
             return RedirectToAction("Index", "Home"); ;
         }
 
+        public IActionResult Alterar(string cnpj, string nomeF)
+        {
+            Fornecedor fornecedor = new();
+            if(fornecedor.AlterarFornecedor(cnpj, nomeF))
+            {
+                return View();
+            }
+
+
+            return View();
+        }
+
+
+
+
+
+
+
         public IActionResult Formulario()
-        
-       {
+        {
             return View();
         }
 

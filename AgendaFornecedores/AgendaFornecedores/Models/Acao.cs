@@ -82,6 +82,8 @@ namespace AgendaFornecedores.Models
                     acoes.Add(acao1);
                 }
 
+                acoes.Reverse();
+
                 return acoes;
 
             }
