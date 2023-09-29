@@ -60,25 +60,26 @@ else {
             </li>
             @foreach (Fornecedor fornecedor in Model)
             {
-                 string[] atributos = { fornecedor.Nome, fornecedor.Cnpj, fornecedor.Email, fornecedor.Contato,
+                string jfornecedor = JsonConvert.SerializeObject(fornecedor);
+
+                string[] atributos = { fornecedor.Nome, fornecedor.Cnpj, fornecedor.Email, fornecedor.Contato,
                   fornecedor.VencimentoFatura,fornecedor.Anotacao };
 
                 <li class="row">
                     @for(int i = 0 ; i < atributos.Length; i++)
                     {
-                        <p class="col text-start">@atributos[i]</p>
+                        <p class="col text-start" value="@atributos[i]">@atributos[i]</p>
                     }
 
                     @if (user.Midadm)
                     {
-                        <form class="col btn" onsubmit="return Alterar()" asp-controller="Fornecedor" asp-action="Alterar">
-                            <input value="@fornecedor.Cnpj" hidden name="cnpj">
-                            <input value="@fornecedor.Nome" hidden name="nomeF">
+                        <form class="col btn" onsubmit="return Alterar()" asp-controller="Fornecedor" asp-action="redirecionarDados">
+                            <input value="@jfornecedor " hidden name="jfornecedor">
 
                             <button type="submit" class="col btn btn-outline-secundary btn-light">Alterar</button>
                         </form>
 
-                        <form class="col btn" onsubmit="return Deletar()" asp-controller="Fornecedor" asp-action="Deletar">
+                        <form class="col btn" onsubmit="return Deletar()"asp-controller="Fornecedor" asp-action="Deletar">
                         <!--asp-controller="Fornecedor" asp-action="DeletarFornecedor"-->
                         <input value="@fornecedor.Cnpj" hidden name="cnpj">
                         <input value="@fornecedor.Nome" hidden name="nomeF">

@@ -1,54 +1,105 @@
-﻿
+﻿@using Newtonsoft.Json;
+@model Fornecedor;
 @{
     ViewData["Title"] = "Formulario";
 }
-
-<h1 class="text-center display-4">Cadastro de Fornecedores de TI </h1>
 
 <section class="row">
 
     <div class="col"></div>
     <div class="container col">
-        <form onsubmit="return ConfirmacaoCadastro() " asp-controller="Fornecedor" asp-action="Cadastrar" method="post" name="formularioAdicionar">
 
-            <div class="form-group">
-              <label for="Nome">Nome:</label>
-                <input type="text" class="form-control" id="nome" required placeholder="Digite o nome do fornecedor" name="nomeFornecedor">
-            </div>
 
-            <div class="form-group">
-                <label for="CNPJ">CNPJ:</label>
-                <input type="text" class="form-control" id="CNPJ" required maxlength="14" placeholder="Digite o CNPJ do fornecedor" name="cnpj">
-            </div>
+        @if (TempData["alterfornecedor"] != null)
+        {
+            Fornecedor fornecedor = JsonConvert.DeserializeObject<Fornecedor>(TempData["alterfornecedor"].ToString());
 
-            <div class="form-group">
-                <label for="Contato">Contato:</label>
-                <input type="text" class="form-control" id="contato" required maxlength="9" placeholder="Digite o Contato do fornecedor" name="contato">
-            </div>
+            <h1 class="text-center display-4">Alteração de Fornecedor de TI </h1>
 
-            <div class="form-group">
-                <label for="email">e-mail:</label>
-                <input type="email" class="form-control" id="email" required placeholder="Digite o e-mail do fornecedor" name="email">
-            </div>
+            //formulario de alterações
+            <form onsubmit="return validarAlterar()" asp-controller="Fornecedor" asp-action="Alterar" name="formularioAlterar">
 
-            <div class="form-group">
-                <label for="vencimentoFatura">Dia de vencimento de fatura:</label>
-                <input type="date" class="form-control" id="email" required maxlength="2" placeholder="Digite o dia de vencimento" name="vencimentoFatura">
-            </div>
+                <input hidden name="grupoT" value="@fornecedor.Grupo_trabalho">
+                <input hidden name="id" value="@fornecedor.Id">
 
-            <div class="form-group">
-                <label for="Anotações">Anotações:</label>
+                <div class="form-group">
+                    <label for="Nome">Nome:</label>
+                    <input type="text" class="form-control" value="@fornecedor.Nome" name="nomeFornecedor">
+                </div>
+
+                <div class="form-group">
+                    <label for="CNPJ">CNPJ:</label>
+                    <input type="text" class="form-control" maxlength="14" value="@fornecedor.Cnpj" name="cnpj">
+                </div>
+
+                <div class="form-group">
+                    <label for="Contato">Contato:</label>
+                    <input type="text" class="form-control" maxlength="9" value="@fornecedor.Contato" name="contato">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">e-mail:</label>
+                    <input type="email" class="form-control" value="@fornecedor.Email" name="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="vencimentoFatura">Dia de vencimento de fatura:</label>
+                    <input type="date" class="form-control" maxlength="2" value="@fornecedor.VencimentoFatura" name="vencimentoFatura">
+                </div>
+
+                <div class="form-group">
+                    <label for="Anotações">Anotações:</label>
                     <br />
-                <textarea class="form-control" name="anotacao" id="anotacoes" cols="25" rows="5"></textarea>
-            </div>
+                    <textarea class="form-control" value="@fornecedor.Anotacao" name="anotacao" cols="25" rows="5"></textarea>
+                </div>
 
 
-            <button onclick="reuturn ConfirmacaoCadastro()" style="margin-top:1%;" class="btn btn-primary" type="submit">Adicionar</button>
+                <button onclick="reuturn ConfirmacaoCadastro()" style="margin-top:1%;" class="btn btn-primary" type="submit">Adicionar</button>
 
-    </form>
+            </form>
+        }
+        else
+        {
+            <h1 class="text-center display-4">Cadastro de Fornecedores de TI </h1>
 
-       
+            <form onsubmit="return ConfirmacaoCadastro() " asp-controller="Fornecedor" asp-action="Cadastrar" method="post" name="formularioAdicionar">
 
+                <div class="form-group">
+                    <label for="Nome">Nome:</label>
+                    <input type="text" class="form-control" id="nome" required placeholder="Digite o nome do fornecedor" name="nomeFornecedor">
+                </div>
+
+                <div class="form-group">
+                    <label for="CNPJ">CNPJ:</label>
+                    <input type="text" class="form-control" id="CNPJ" required maxlength="14" placeholder="Digite o CNPJ do fornecedor" name="cnpj">
+                </div>
+
+                <div class="form-group">
+                    <label for="Contato">Contato:</label>
+                    <input type="text" class="form-control" id="contato" required maxlength="9" placeholder="Digite o Contato do fornecedor" name="contato">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">e-mail:</label>
+                    <input type="email" class="form-control" id="email" required placeholder="Digite o e-mail do fornecedor" name="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="vencimentoFatura">Dia de vencimento de fatura:</label>
+                    <input type="date" class="form-control" id="email" required maxlength="2" placeholder="Digite o dia de vencimento" name="vencimentoFatura">
+                </div>
+
+                <div class="form-group">
+                    <label for="Anotações">Anotações:</label>
+                    <br />
+                    <textarea class="form-control" name="anotacao" id="anotacoes" cols="25" rows="5"></textarea>
+                </div>
+
+
+                <button onclick="reuturn ConfirmacaoCadastro()" style="margin-top:1%;" class="btn btn-primary" type="submit">Adicionar</button>
+
+            </form>
+        }
     </div>
     <div class="col">
         <p>@TempData["acao"]</p>

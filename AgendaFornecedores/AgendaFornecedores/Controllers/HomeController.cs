@@ -69,5 +69,12 @@ namespace AgendaFornecedores.Controllers
             return View(GrupoPermitido.listarGrupos());
         }
 
+
+        public IActionResult Sair()
+        {
+            HttpContext.Session.Remove("usuario");
+            return RedirectToAction("Index", "Home");
+        }
+
     }
 }

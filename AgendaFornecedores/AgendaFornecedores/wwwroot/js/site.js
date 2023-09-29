@@ -11,10 +11,16 @@ function Deletar() {
     return confirm("Tem certeza de que deseja deletar esse fornecedor da lista?")
 }
 
-function Alterar() {
-    return confirm("Tem certeza de que deseja alterar os dados desse fornecedor?")
-}
+
 
 function adicionarGrupo() {
     return confirm("Tem certeza de qua deseja adicionar esse grupo aos administradores?")
+}
+
+function validarAlterar() {
+    //let input = document.getElementsByName("nomeFornecedor")
+    //let nF = input[0].value
+    // nF += "adfasadf"
+    return confirm("Deseja realizar essas alterações no fornecedor ??")
+
 }

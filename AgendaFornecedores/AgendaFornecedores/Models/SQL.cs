@@ -6,7 +6,8 @@ namespace AgendaFornecedores.Models
 { 
     public class SQL
     {
-        //aqui estarão diversos comandos do SQL 
+        public SQL() { }
+
         public static string SConexao()
         {
             return "Server=localhost;Port=3306;Database=agenda_fornecedores;User Id=root;Password=Ad#2735G";
@@ -122,6 +123,50 @@ namespace AgendaFornecedores.Models
             finally { co.Close(); }
 
 
+        }
+
+        internal bool AlterarDados(string tabela, List<string> colunas, List<string> valores)
+        {
+            //o id se mostrou um atributo necessario agora
+            /*UPDATE table_name SET column1 = value1, column2 = value2, ...WHERE condition;*/
+
+            //"UPDATE Tabela SET Propriedade1 = @Valor1, Propriedade2 = @Valor2 WHERE ID = @ID"
+
+            MySqlConnection con = new(SConexao());
+
+            try
+            {
+                //modelando string SQL
+                string colunaValores = $"UPDATE {tabela} SET ";
+
+                for (int i = 0; i < colunas.Count; i++)
+                {
+                    if (i != colunas.Count - 1) colunaValores += $"{colunas[i]} = @{colunas[i]}, ";
+                    else
+                    {
+                        colunaValores += $"{colunas[i]} = @{colunas[i]} where {colunas[0]} = @{colunas[0]}";
+                    }
+                }
+
+                con.Open();
+                MySqlCommand sqlCommand = new MySqlCommand(colunaValores, con);
+
+                for(int i = 0;i < colunas.Count;i++)
+                {
+                    sqlCommand.Parameters.AddWithValue($"@{colunas[i]}", valores[i]);
+                }
+                sqlCommand.ExecuteNonQuery();
+                return true;
+
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
+            finally
+            {
+                con.Close();
+            }
         }
     }
 }

@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Relational;
 using System.Drawing;
+using ZstdSharp.Unsafe;
 
 namespace AgendaFornecedores.Models
 {
     public class Fornecedor
     {
+        int id;
         string nome;
         string cnpj;
         string contato;
@@ -17,8 +19,9 @@ namespace AgendaFornecedores.Models
         string vencimentoFatura;
 
         public Fornecedor() { }
-        public Fornecedor(string nome, string cnpj, string contato, string email, string anotacao, string grupo_trabalho, string vencimentoFatura)
+        public Fornecedor(int id, string nome, string cnpj, string contato, string email, string anotacao, string grupo_trabalho, string vencimentoFatura)
         {
+            this.id = id;
             this.nome = nome;
             this.cnpj = cnpj;
             this.contato = contato;
@@ -35,6 +38,7 @@ namespace AgendaFornecedores.Models
         public string Anotacao { get => anotacao; set => anotacao = value; }
         public string Grupo_trabalho { get => grupoTrabalho; set => grupoTrabalho = value; }
         public string VencimentoFatura { get => vencimentoFatura; set => vencimentoFatura = value; }
+        public int Id { get => id; set => id = value; }
 
         public bool Cadastrar(Fornecedor fornecedor)
         {
@@ -51,7 +55,7 @@ namespace AgendaFornecedores.Models
                 {
                     colunas = new List<string>{ "nome", "cnpj","contato","email", "anotacao", "grupo_trabalho", "vencimento_fatura"};
                     parametros = new List<string> { fornecedor.Nome, fornecedor.Cnpj, fornecedor.Contato, fornecedor.Email, 
-                        fornecedor.Anotacao, fornecedor.Grupo_trabalho, fornecedor.VencimentoFatura };
+                    fornecedor.Anotacao, fornecedor.Grupo_trabalho, fornecedor.VencimentoFatura };
 
                     if (SQL.SCadastrar("fornecedores", colunas, parametros))return true;
  
@@ -59,7 +63,7 @@ namespace AgendaFornecedores.Models
                 }        
                 return false;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
@@ -83,6 +87,7 @@ namespace AgendaFornecedores.Models
 
                 while (leitor.Read())
                 {
+                    int id = int.Parse(leitor["id"].ToString());
                     string nome = leitor["nome"].ToString();
                     string cnpj = leitor["cnpj"].ToString();
                     string contato = leitor["contato"].ToString();
@@ -91,7 +96,7 @@ namespace AgendaFornecedores.Models
                     string grupoTrab = leitor["grupo_trabalho"].ToString();
                     string vencimento = leitor["vencimento_fatura"].ToString();
 
-                    Fornecedor fornecedor = new(nome, cnpj, contato, email, anotacao,grupoTrab,vencimento);
+                    Fornecedor fornecedor = new(id, nome, cnpj, contato, email, anotacao,grupoTrab,vencimento);
                     fornecedores.Add(fornecedor);
                 }
 
@@ -99,7 +104,7 @@ namespace AgendaFornecedores.Models
 
             }
 
-            catch { return fornecedores; }
+            catch (Exception ex){ return fornecedores; }
             finally { con.Close(); }
 
         }
@@ -117,7 +122,7 @@ namespace AgendaFornecedores.Models
                 if(SQL.SDeletar("fornecedores",colunas,parametros))return true;
                 return false;
             }
-            catch (Exception ex)
+            catch
             { return false; }
             finally
             {
@@ -125,20 +130,21 @@ namespace AgendaFornecedores.Models
             }
         }
 
-        public bool AlterarFornecedor(string cnpj, string nomeF)
+        internal bool AlterarFornecedor(Fornecedor fornecedor)
         {
             try
             {
-                List<string> colunas = new List<string>{"cnpj"};
-                List<string> valores = new List<string> { };
-                return true;
+                List<string> cols = new List<string> { "id","nome","cnpj","contato","email","anotacao","grupo_trabalho","vencimento_fatura"};
+                List<string> valores = new List<string> {fornecedor.Id.ToString(), fornecedor.Nome, fornecedor.Cnpj,fornecedor.Contato,fornecedor.Email,
+                fornecedor.anotacao,fornecedor.Grupo_trabalho,fornecedor.VencimentoFatura};
+
+                SQL sQL = new SQL();
+                if (sQL.AlterarDados("fornecedores", cols, valores)) return true;
+
+                return false;
             }
-            catch(Exception ex) { return false; }
+            catch { return false; }
+
         }
-
-
-
-
-
     }
 }
