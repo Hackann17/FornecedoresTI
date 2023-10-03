@@ -58,24 +58,23 @@ namespace AgendaFornecedores.Models
                                 groposT.Add(groupName);
                             }
                         }
-                        //verifica se o usuario está nos grupos administradores ou nao
 
-                        GrupoPermitido grupoT = verificaAdmin(groposT);
+                        //verifica se o usuario está nos grupos administradores ou nao
+                        GrupoAcesso grupoT = verificaAdmin(groposT);
                         if(grupoT != null)
                         {
-                            if (grupoT.Fulladm == "1")
+                            if (grupoT.Fulladm == 1)
                             {
                                 //fulladm
                                 Usuario us = new Usuario(nomeU, senhaU, grupoT.Nome_grupo, true, true);
                                 return us;
                             }
-                            else if (grupoT.Fulladm == "0")
+                            else if (grupoT.Fulladm == 0)
                             {
                                 //midadm
                                 Usuario us = new Usuario(nomeU, senhaU, grupoT.Nome_grupo, true, false);
                                 return us;
                             }
-            
                         }
                         else
                         {
@@ -96,7 +95,7 @@ namespace AgendaFornecedores.Models
             }
         }
         //verificando grupos de acesso do usuario no banco de dados
-        public static GrupoPermitido verificaAdmin(List<string> groposT)
+        public static GrupoAcesso verificaAdmin(List<string> groposT)
         {
             MySqlConnection con = new MySqlConnection(SQL.SConexao());
             try
@@ -112,7 +111,9 @@ namespace AgendaFornecedores.Models
                     {
                         if (grupo == leitor["nome_grupos"].ToString())
                         {
-                            GrupoPermitido gt = new GrupoPermitido(leitor["nome_grupos"].ToString(), leitor["fulladm"].ToString());
+                            GrupoAcesso gt = new GrupoAcesso(int.Parse(leitor["id"].ToString()),
+                            leitor["nome_grupos"].ToString(),int.Parse( leitor["fulladm"].ToString()));
+
                             return gt;
                         }
                     }

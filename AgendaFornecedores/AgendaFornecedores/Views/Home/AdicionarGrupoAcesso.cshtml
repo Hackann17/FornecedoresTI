@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AgendaFornecedores.Models.GrupoPermitido>
+﻿@model IEnumerable<AgendaFornecedores.Models.GrupoAcesso>
 @using Microsoft.AspNetCore.Mvc;
 
 @{
@@ -35,13 +35,18 @@
         @{
             //pensar numa forma de realizar uma quebra de coluna a cada 5 grupos
             int grupos = 0;
-            foreach (GrupoPermitido gP in Model)
+            foreach (GrupoAcesso gP in Model)
             {
                 grupos ++;
                 <tr>
 
                     <td>
                         <h5>@gP.Nome_grupo</h5>
+
+                        <form asp-controller="GrupoTrabalho" asp-action="Apagar">
+                        <input hidden value="@gP.Nome_grupo" name="nomeGrupo">
+                        <button type="submit"> Deletar grupo</button>
+                        </form>
                     </td>
 
                 </tr>

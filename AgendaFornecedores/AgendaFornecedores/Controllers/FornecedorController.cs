@@ -16,7 +16,7 @@ namespace AgendaFornecedores.Controllers
             if (fornecedor.Cadastrar(fornecedor))
             {
                 DateTime dataHoraAtualUtc = DateTime.Now;
-                Acao ac = new Acao(u.NomeUsuario,"cadastrar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeFornecedor);
+                Acao ac = new Acao(0,u.NomeUsuario,"cadastrar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeFornecedor);
 
                 //salva o objeto de ação e atualiza a lista de ações
                 string objtacao = JsonConvert.SerializeObject(ac);
@@ -35,7 +35,7 @@ namespace AgendaFornecedores.Controllers
                 Usuario us = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("usuario"));
                 DateTime dataHoraAtualUtc = DateTime.Now;
 
-                Acao ac = new Acao(us.NomeUsuario, "deletar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeF);
+                Acao ac = new Acao(0, us.NomeUsuario, "deletar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeF);
 
                 string objtacao = JsonConvert.SerializeObject(ac);
                 return RedirectToAction("RegistrarAcao", "Acao", new {objtacao});
@@ -52,7 +52,7 @@ namespace AgendaFornecedores.Controllers
                 Usuario u = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("usuario"));
                 DateTime dataHoraAtualUtc = DateTime.Now;
 
-                Acao ac = new Acao(u.NomeUsuario, "alterar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeFornecedor);
+                Acao ac = new Acao(0, u.NomeUsuario, "alterar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeFornecedor);
 
                 //salva o objeto de ação e atualiza a lista de ações
                 string objtacao = JsonConvert.SerializeObject(ac);

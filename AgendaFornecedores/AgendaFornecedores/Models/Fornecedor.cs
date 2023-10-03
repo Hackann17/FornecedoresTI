@@ -1,9 +1,6 @@
-﻿using Humanizer;
-using Microsoft.AspNetCore.Mvc;
+﻿
 using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.Relational;
-using System.Drawing;
-using ZstdSharp.Unsafe;
+
 
 namespace AgendaFornecedores.Models
 {
@@ -40,27 +37,30 @@ namespace AgendaFornecedores.Models
         public string VencimentoFatura { get => vencimentoFatura; set => vencimentoFatura = value; }
         public int Id { get => id; set => id = value; }
 
+
         public bool Cadastrar(Fornecedor fornecedor)
         {
             MySqlConnection con = new MySqlConnection(SQL.SConexao());
             //INSERT INTO `agenda_fornecedores`.`grupos_permitidos` (`id`, `nome_grupos`) VALUES ('0', 'GG_TI');
+
             try
             {
-                con.Open();
-
                 List<string> colunas = new List<string> { "cnpj"};
                 List<string> parametros = new List<string> { fornecedor.Cnpj };
 
                 if (SQL.Procurar("fornecedores",colunas, parametros))
                 {
-                    colunas = new List<string>{ "nome", "cnpj","contato","email", "anotacao", "grupo_trabalho", "vencimento_fatura"};
-                    parametros = new List<string> { fornecedor.Nome, fornecedor.Cnpj, fornecedor.Contato, fornecedor.Email, 
-                    fornecedor.Anotacao, fornecedor.Grupo_trabalho, fornecedor.VencimentoFatura };
+                    con.Open();
+                    string insert = $"insert into fornecedores(nome, cnpj, contato, email, anotacao, grupo_trabalho, vencimento_fatura)" +
+                   $"values('{fornecedor.nome}','{fornecedor.Cnpj}','{fornecedor.Contato}','{fornecedor.Email}','{fornecedor.Anotacao}','{fornecedor.Grupo_trabalho}',{fornecedor.VencimentoFatura})";
+                   
+                    MySqlCommand mySqlCommand = new MySqlCommand(insert, con);
 
-                    if (SQL.SCadastrar("fornecedores", colunas, parametros))return true;
- 
-                    return false;
-                }        
+                    mySqlCommand.ExecuteNonQuery();
+
+                    return true;
+                }
+                
                 return false;
             }
             catch
@@ -82,6 +82,8 @@ namespace AgendaFornecedores.Models
             {
                 con.Open();
 
+                //organizar lista de fornecedores pelo mais proximo do vencimento da fatura...
+
                 MySqlCommand sqlCommand = new MySqlCommand("select * from fornecedores", con);
                 MySqlDataReader leitor = sqlCommand.ExecuteReader();
 
@@ -94,11 +96,18 @@ namespace AgendaFornecedores.Models
                     string email = leitor["email"].ToString();
                     string anotacao = leitor["anotacao"].ToString();
                     string grupoTrab = leitor["grupo_trabalho"].ToString();
-                    string vencimento = leitor["vencimento_fatura"].ToString();
+
+                    //o ParseExact gera um objeto datetime modelave, sigando o contexto da aplicação e algumas diretrizes
+                    DateTime dataH = DateTime.ParseExact(leitor["vencimento_fatura"].ToString(), "dd/MM/yyyy HH:mm:ss",null);
+                    string vencimento = dataH.ToString("dd/MM/yyyy");
 
                     Fornecedor fornecedor = new(id, nome, cnpj, contato, email, anotacao,grupoTrab,vencimento);
+
                     fornecedores.Add(fornecedor);
                 }
+                //organizar lista de fornecedores pelo mais proximo do vencimento da fatura...
+
+                List<DateOnly> datasfornecedores = fornecedores.Select(forn => DateOnly.ParseExact(forn.VencimentoFatura, "dd/MM/yyyy", null)).OrderBy(d => d).ToList();
 
                 return fornecedores;
 

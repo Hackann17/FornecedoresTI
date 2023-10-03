@@ -32,10 +32,8 @@ namespace AgendaFornecedores.Models
                         {
                             return true;
                         }
-                    }
-                   
+                    }  
                 }
-
                 return false;
             }
             
@@ -48,7 +46,7 @@ namespace AgendaFornecedores.Models
             
         }
 
-        public static bool SCadastrar(string tabela, List<string> colunas, List<string> valores)
+        public static bool SCadastrar(string tabela, List<object> colunas, List<object> valores)
         {
             string co = SConexao();
             MySqlConnection con = new MySqlConnection(co);
@@ -155,7 +153,7 @@ namespace AgendaFornecedores.Models
                 {
                     sqlCommand.Parameters.AddWithValue($"@{colunas[i]}", valores[i]);
                 }
-                sqlCommand.ExecuteNonQuery();
+                sqlCommand.ExecuteNonQuery();              
                 return true;
 
             }

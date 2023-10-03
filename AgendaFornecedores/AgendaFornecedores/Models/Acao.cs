@@ -1,17 +1,20 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using MySql.Data.MySqlClient;
 
 namespace AgendaFornecedores.Models
 {
     public class Acao
     {
+        int id;
         string nomeUsuario;
         string data;
         string action;
         string nomeFornecedor;
 
         public Acao() { }
-        public Acao( string nomeUsuario, string action, string data, string nomeFornecedor)
+        public Acao(int id, string nomeUsuario, string action, string data, string nomeFornecedor)
         {
+            this.id = id;
             this.nomeUsuario = nomeUsuario;
             this.action = action;
             this.data = data;
@@ -25,6 +28,8 @@ namespace AgendaFornecedores.Models
         public string Action { get => action; set => action = value; }
 
         public string NomeFornecedor { get => nomeFornecedor; set => nomeFornecedor = value; }
+        public int Id { get => id; set => id = value; }
+
 
         public  bool AdiconarAcao( Acao action)
         {
@@ -34,8 +39,8 @@ namespace AgendaFornecedores.Models
             {
                 con.Open();
 
-                List<string> colunas = new List<string> { "nome_usuario", "acao", "data", "nome_fornecedor"};
-                List<string> valores = new List<string> { action.NomeUsuario, action.Action, action.Data, action.NomeFornecedor };
+                List<object> colunas = new List<object> { "nome_usuario", "acao", "data", "nome_fornecedor"};
+                List<object> valores = new List<object> { action.NomeUsuario, action.Action, action.Data, action.NomeFornecedor };
 
                 if(SQL.SCadastrar("acoes", colunas, valores))
                 {   
@@ -45,8 +50,6 @@ namespace AgendaFornecedores.Models
                 {
                     return false;
                 }
-
-
             }
             catch (Exception)
             {
@@ -73,19 +76,19 @@ namespace AgendaFornecedores.Models
 
                 while (leitor.Read())
                 {
+                    int id = int.Parse(leitor["id"].ToString());
                     string nome_u = leitor["nome_usuario"].ToString();
                     string acao = leitor["acao"].ToString();
                     string data = leitor["data"].ToString();
                     string nome_f = leitor["nome_fornecedor"].ToString();
 
-                    Acao acao1 = new Acao(nome_u, acao, data, nome_f);
+                    Acao acao1 = new Acao(id,nome_u, acao, data, nome_f);
                     acoes.Add(acao1);
                 }
 
                 acoes.Reverse();
 
                 return acoes;
-
             }
             catch { return acoes; }
 

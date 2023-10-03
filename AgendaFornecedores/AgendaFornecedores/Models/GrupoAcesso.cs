@@ -2,25 +2,28 @@
 
 namespace AgendaFornecedores.Models
 {
-    public class GrupoPermitido
+    public class GrupoAcesso
     {
+        int id;
         string nome_grupo;
-        string fulladm;
+        int fulladm;
 
-        public GrupoPermitido() { }
-       public GrupoPermitido(string nome_grupo, string fulladm)
+        public GrupoAcesso() { }
+       public GrupoAcesso(int id, string nome_grupo, int fulladm)
         {
+            this.id = id;
             this.nome_grupo = nome_grupo;  
             this.fulladm = fulladm;
         }
 
         public string Nome_grupo { get => nome_grupo; set => nome_grupo = value; }
-        public string Fulladm { get => fulladm; set => fulladm = value; }
+        public int Fulladm { get => fulladm; set => fulladm = value; }
+        public int Id { get => id; set => id = value; }
 
-        public static List<GrupoPermitido> listarGrupos()
+        public static List<GrupoAcesso> listarGrupos()
         {
             MySqlConnection con = new MySqlConnection(SQL.SConexao());
-            List<GrupoPermitido> grupos = new List<GrupoPermitido>();
+            List<GrupoAcesso> grupos = new List<GrupoAcesso>();
             try
             {
                 con.Open();
@@ -29,7 +32,7 @@ namespace AgendaFornecedores.Models
                 MySqlDataReader leitor = qry.ExecuteReader();
                 while (leitor.Read())
                 {
-                   GrupoPermitido gp = new GrupoPermitido(leitor["nome_grupos"].ToString(), leitor["fulladm"].ToString());
+                   GrupoAcesso gp = new GrupoAcesso(int.Parse(leitor["id"].ToString()), leitor["nome_grupos"].ToString(), int.Parse(leitor["fulladm"].ToString()));
                    grupos.Add(gp);
                 }
                 return grupos; 
@@ -40,14 +43,14 @@ namespace AgendaFornecedores.Models
             finally { con.Close(); }
         }
 
-        public bool AdicionarGrupo(GrupoPermitido GT)
+        public bool AdicionarGrupo(GrupoAcesso GT)
         {
             MySqlConnection con = new MySqlConnection(SQL.SConexao());
             try
             {
                 con.Open();
-                List<string> colunas = new List<string> { "nome_grupos","fulladm"};
-                List<string> parametros = new List<string> {GT.Nome_grupo, GT.Fulladm};
+                List<object> colunas = new List<object> { "nome_grupos","fulladm"};
+                List<object> parametros = new List<object> {GT.Nome_grupo, GT.Fulladm.ToString()};
 
                 if (SQL.SCadastrar("grupos_permitidos", colunas, parametros)) return true;
                 return false;
@@ -60,6 +63,16 @@ namespace AgendaFornecedores.Models
             {
                 con.Close();
             }
+        }
+
+        internal bool ApagarGrupoAcesso(string nomeGrupo)
+        {
+            try
+            {
+                return true;
+            }
+            catch (Exception ex) { return false;}
+
         }
     }
 }
