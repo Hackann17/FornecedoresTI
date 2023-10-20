@@ -13,12 +13,13 @@
 </head>
 <body>
     @{
-        Usuario user = new Usuario("", "","", true,true);
+        Usuario user = new Usuario("generico", "","", false,false);
 
         if (Context.Session.GetString("usuario") != null)
         {
-            user = JsonConvert.DeserializeObject<Usuario>(Context.Session.GetString("usuario"));
+        user = JsonConvert.DeserializeObject<Usuario>(Context.Session.GetString("usuario"));
         }
+        
       }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -71,4 +72,5 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

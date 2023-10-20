@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+﻿using System.Data.SqlClient;
 using System.DirectoryServices;
 using DirectoryEntry = System.DirectoryServices.DirectoryEntry;
 
@@ -63,13 +63,13 @@ namespace AgendaFornecedores.Models
                         GrupoAcesso grupoT = verificaAdmin(groposT);
                         if(grupoT != null)
                         {
-                            if (grupoT.Fulladm == 1)
+                            if (grupoT.Fulladm)
                             {
                                 //fulladm
                                 Usuario us = new Usuario(nomeU, senhaU, grupoT.Nome_grupo, true, true);
                                 return us;
                             }
-                            else if (grupoT.Fulladm == 0)
+                            else
                             {
                                 //midadm
                                 Usuario us = new Usuario(nomeU, senhaU, grupoT.Nome_grupo, true, false);
@@ -97,22 +97,22 @@ namespace AgendaFornecedores.Models
         //verificando grupos de acesso do usuario no banco de dados
         public static GrupoAcesso verificaAdmin(List<string> groposT)
         {
-            MySqlConnection con = new MySqlConnection(SQL.SConexao());
+            SqlConnection con = new SqlConnection(SQL.SConexao());
             try
             {
                 con.Open();
-                MySqlCommand qry = new MySqlCommand("Select * from grupos_permitidos", con);
-                MySqlDataReader leitor = qry.ExecuteReader();
+                SqlCommand qry = new SqlCommand("Select * from grupos_acesso", con);
+                SqlDataReader leitor = qry.ExecuteReader();
 
                 //enquanto o leitor lê verifica se os grupos sao iguais na lista e no banco de dados
                 while (leitor.Read())
                 {
                     foreach (string grupo in groposT)
                     {
-                        if (grupo == leitor["nome_grupos"].ToString())
+                        if (grupo == leitor["nome_grupo"].ToString())
                         {
                             GrupoAcesso gt = new GrupoAcesso(int.Parse(leitor["id"].ToString()),
-                            leitor["nome_grupos"].ToString(),int.Parse( leitor["fulladm"].ToString()));
+                            leitor["nome_grupo"].ToString(), Convert.ToBoolean(leitor["fulladm"]));
 
                             return gt;
                         }
@@ -122,7 +122,7 @@ namespace AgendaFornecedores.Models
                 return null;
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 return null;

@@ -23,7 +23,7 @@
         <!--para cada linha da tabela serao geradas novas celulas para cada atributo do objeto-->
         @foreach (Acao act in Model)
         {
-            string[] atributos = {act.NomeUsuario, act.Action, act.NomeFornecedor, act.Data };
+            string[] atributos = {act.NomeUsuario, act.Action, act.NomeFornecedor, act.Data.ToString() };
 
             <tr class="row-cols-auto">
 

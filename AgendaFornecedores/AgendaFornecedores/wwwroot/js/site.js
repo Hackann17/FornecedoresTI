@@ -3,8 +3,16 @@
 
 // Write your JavaScript code.
 
+// funcoes para modelar mascara de cnpj
+
 function ConfirmacaoCadastro() {
+    var cnpjInput = document.getElementById('CNPJ');
+    let contatoinput = document.getElementById('contato');
+    //cnpjInput.value = formatarCNPJ(cnpjInput.value);
+    alert("macaco loko" + cnpjInput.value + contatoinput.value)
+
     return confirm("Os dados estao corretos? Deseja mesmo fazer o cadastro? ")
+
 }
 
 function Deletar() {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
 
 namespace AgendaFornecedores.Models
 {
@@ -7,12 +8,12 @@ namespace AgendaFornecedores.Models
     {
         int id;
         string nomeUsuario;
-        string data;
+        DateTime data;
         string action;
         string nomeFornecedor;
 
         public Acao() { }
-        public Acao(int id, string nomeUsuario, string action, string data, string nomeFornecedor)
+        public Acao(int id, string nomeUsuario, string action, DateTime data, string nomeFornecedor)
         {
             this.id = id;
             this.nomeUsuario = nomeUsuario;
@@ -24,7 +25,7 @@ namespace AgendaFornecedores.Models
         public string NomeUsuario { get => nomeUsuario; set => nomeUsuario = value; }
 
 
-        public string Data { get => data; set => data = value; }
+        public DateTime Data { get => data; set => data = value; }
         public string Action { get => action; set => action = value; }
 
         public string NomeFornecedor { get => nomeFornecedor; set => nomeFornecedor = value; }
@@ -33,25 +34,22 @@ namespace AgendaFornecedores.Models
 
         public  bool AdiconarAcao( Acao action)
         {
-            MySqlConnection con = new MySqlConnection(SQL.SConexao());
+            SqlConnection con = new (SQL.SConexao());
 
             try
             {
                 con.Open();
 
-                List<object> colunas = new List<object> { "nome_usuario", "acao", "data", "nome_fornecedor"};
-                List<object> valores = new List<object> { action.NomeUsuario, action.Action, action.Data, action.NomeFornecedor };
+                string insert = "insert into acoes(nome_usuario, acao, nome_fornecedor, data)" +
+                    $"values('{action.NomeUsuario}','{action.Action}','{action.NomeFornecedor}', '{action.Data}')";
 
-                if(SQL.SCadastrar("acoes", colunas, valores))
-                {   
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                SqlCommand SqlCommand = new SqlCommand(insert, con); 
+
+                SqlCommand.ExecuteNonQuery();
+
+                return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
 
@@ -64,22 +62,22 @@ namespace AgendaFornecedores.Models
 
         public static List<Acao> listarAcoes()
         {
-            MySqlConnection con = new MySqlConnection(SQL.SConexao());
+            SqlConnection con = new SqlConnection(SQL.SConexao());
             List<Acao> acoes = new List<Acao>();
 
             try
             {
                 con.Open();
 
-                MySqlCommand mySqlCommand = new MySqlCommand("select * from acoes",con);
-                MySqlDataReader leitor = mySqlCommand.ExecuteReader();
+                SqlCommand SqlCommand = new SqlCommand("select * from acoes",con);
+                SqlDataReader leitor = SqlCommand.ExecuteReader();
 
                 while (leitor.Read())
                 {
                     int id = int.Parse(leitor["id"].ToString());
                     string nome_u = leitor["nome_usuario"].ToString();
                     string acao = leitor["acao"].ToString();
-                    string data = leitor["data"].ToString();
+                    DateTime data = (DateTime)leitor["data"];
                     string nome_f = leitor["nome_fornecedor"].ToString();
 
                     Acao acao1 = new Acao(id,nome_u, acao, data, nome_f);

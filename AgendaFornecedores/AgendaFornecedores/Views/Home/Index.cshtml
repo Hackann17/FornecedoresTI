@@ -7,10 +7,9 @@
 @{
     ViewData["Title"] = "Página inicial";
     //sessao falsa para testes
-    Context.Session.SetString("usuario", JsonConvert.SerializeObject(new Usuario("nome", "1234","GG_TI", true,true)));
+   // Context.Session.SetString("usuario", JsonConvert.SerializeObject(new Usuario("nome", "1234","GG_TI", false,false)));
 
 }
-
     @if (Context.Session.GetString("usuario") == null)
     {
         
@@ -56,23 +55,28 @@ else {
                     <div class="col"></div>
                     <div class="col"></div>
                 }
-      
+                
             </li>
             @foreach (Fornecedor fornecedor in Model)
             {
-                string jfornecedor = JsonConvert.SerializeObject(fornecedor);
-
+                DateOnly dvenc = fornecedor.VencimentoFatura;
                 string[] atributos = { fornecedor.Nome, fornecedor.Cnpj, fornecedor.Email, fornecedor.Contato,
-                  fornecedor.VencimentoFatura,fornecedor.Anotacao };
+                  fornecedor.VencimentoFatura.ToString(),fornecedor.Anotacao };
 
                 <li class="row">
                     @for(int i = 0 ; i < atributos.Length; i++)
                     {
+                        if (atributos[i].Equals(dvenc))
+                        {
+                            <p class="col text-start" style=" background-color:red;" value="@atributos[i]">@atributos[i]</p>
+
+                        }
                         <p class="col text-start" value="@atributos[i]">@atributos[i]</p>
                     }
 
                     @if (user.Midadm)
                     {
+                        string jfornecedor = JsonConvert.SerializeObject(fornecedor);
                         <form class="col btn" onsubmit="return Alterar()" asp-controller="Fornecedor" asp-action="redirecionarDados">
                             <input value="@jfornecedor " hidden name="jfornecedor">
 
@@ -81,8 +85,7 @@ else {
 
                         <form class="col btn" onsubmit="return Deletar()"asp-controller="Fornecedor" asp-action="Deletar">
                         <!--asp-controller="Fornecedor" asp-action="DeletarFornecedor"-->
-                        <input value="@fornecedor.Cnpj" hidden name="cnpj">
-                        <input value="@fornecedor.Nome" hidden name="nomeF">
+                            <input value="@jfornecedor" hidden name="jfornecedor">
 
                         <button  type="submit" class="col btn btn-outline-secundary btn-light" > Deletar </button>
                         </form>

@@ -9,14 +9,14 @@
 
     <h1 class ="display-4"  >Adicionar grupo de acesso </h1>
 
-    <form onsubmit="return adicionarGrupo()" asp-controller="GrupoTrabalho" asp-action="AdicionarGrupoAcesso">
+    <form onsubmit="return adicionarGrupo()" asp-controller="GrupoAcesso" asp-action="AdicionarGrupoAcesso">
         <fieldset class="form-group">
             <h3>Digite o nome do grupo que deseja adicionar</h3>
             <br />
             <label>Nome</label>
             <input type="text" class="form-control" required placeholder="Nome do grupo" name="nome_grupo" />
 
-            <input type="radio" value="1"  name="fulladm" /> Full Administrador
+            <input type="radio" value="true" name="fulladm"  /> Full Administrador
             <br />
 
         </fieldset>
@@ -31,27 +31,46 @@
 </section>
 <section>
 
-    <table>
-        @{
-            //pensar numa forma de realizar uma quebra de coluna a cada 5 grupos
-            int grupos = 0;
-            foreach (GrupoAcesso gP in Model)
+    <table class="col">
+
+        <tr class ="row-cols-auto">
+            <th class="col">
+                <h5 class="col">Nome</h5>
+            </th>
+            <th class="col">
+                <h5 class="col">Status</h5>
+            </th>
+        </tr>
+            <!--pensar numa forma de realizar uma quebra de coluna a cada 5 grupos-->
+            
+            @foreach (GrupoAcesso gP in Model)
             {
-                grupos ++;
-                <tr>
+                <tr class ="row-cols-auto">
 
-                    <td>
-                        <h5>@gP.Nome_grupo</h5>
-
-                        <form asp-controller="GrupoTrabalho" asp-action="Apagar">
-                        <input hidden value="@gP.Nome_grupo" name="nomeGrupo">
-                        <button type="submit"> Deletar grupo</button>
-                        </form>
+                    <td class="col">
+                        <h6>@gP.Nome_grupo</h6> 
                     </td>
 
+                    <td class="cols">
+                        @if (gP.Fulladm)
+                        {
+                            <h6> Administrador</h6>
+                        }
+                        else
+                        {
+                            <h6> Intermediário</h6>
+                        }
+                    </td>
+
+                    <td class ="cols">
+                    <form asp-controller="GrupoAcesso" asp-action="ApagarGrupoAcesso">
+                            <input hidden value="@gP.Id" name="idGrupo">
+                        <button class="col btn btn-outline-secundary btn-light" type="submit"> Deletar grupo</button>
+                        </form>
+                    </td>
                 </tr>
             }
-        }
+        
        
     </table>
 

@@ -1,22 +1,31 @@
-﻿using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.Relational;
+using System.Data.SqlClient;
 
 namespace AgendaFornecedores.Models
 { 
     public class SQL
     {
-        public SQL() { }
 
-        public static string SConexao()
+        public static string  SConexao()
         {
-            return "Server=localhost;Port=3306;Database=agenda_fornecedores;User Id=root;Password=Ad#2735G";
-        }
+            //"Data Source=nome_do_servidor;Initial Catalog=nome_do_banco_de_dados;Integrated Security=True;";
+            //"Data Source=nome_do_servidor;Initial Catalog=nome_do_banco_de_dados;User ID=seu_usuario;Password=sua_senha;";
+            //Server=localhost\SQLEXPRESS;Database=agenda_fornecedores;Trusted_Connection=True;
+            //return "Server=localhost;Port=3306;Database=agenda_fornecedores;User Id=root;Password=Ad#2735G";
 
+            string server = @"TEXTILTI02\SQLEXPRESS";
+            string banco = "agenda_fornecedores";
+            string usuario = "sa";
+            string senha = "Ad#2735G";
+            string con = "Data Source=" + server + ";Initial Catalog=" + banco + ";User Id=" + usuario + ";Password=" + senha + ";";
+
+            return con;
+        }
         public static bool Procurar( string tabela, List<string> colunas, List<string> parametros) {
             string co = SConexao();
-            MySqlConnection con = new MySqlConnection(co);
-
+            SqlConnection con = new SqlConnection(co);
             try
             {
                 con.Open();
@@ -24,12 +33,13 @@ namespace AgendaFornecedores.Models
                 {
                     foreach(string parametro in parametros)
                     {
-                        MySqlCommand cmd = new MySqlCommand($"select * from {tabela} where {coluna} = @parametro",con);
+                        SqlCommand cmd = new SqlCommand($"select * from {tabela} where {coluna} = @parametro",con);
                         cmd.Parameters.AddWithValue("@parametro", parametro);
-                        MySqlDataReader reader = cmd.ExecuteReader();
+                        SqlDataReader reader = cmd.ExecuteReader();
 
                         if (!reader.HasRows)
                         {
+                            reader.Close();
                             return true;
                         }
                     }  
@@ -167,4 +177,6 @@ namespace AgendaFornecedores.Models
             }
         }
     }
+
+
 }

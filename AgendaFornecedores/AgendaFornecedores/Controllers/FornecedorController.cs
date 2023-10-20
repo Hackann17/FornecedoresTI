@@ -7,53 +7,49 @@ namespace AgendaFornecedores.Controllers
     public class FornecedorController : Controller
     {
         [HttpPost]
-        public IActionResult Cadastrar(string nomeFornecedor, string cnpj, string contato, string email, string anotacao,string vencimentoFatura) {
+        public IActionResult Cadastrar(Fornecedor fornecedor) {
 
             Usuario u = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("usuario"));
-
-            Fornecedor fornecedor = new Fornecedor(0,nomeFornecedor, cnpj, contato, email, anotacao, u.GrupoTrabalho, vencimentoFatura);
+            fornecedor.Grupo_trabalho = u.GrupoTrabalho;
 
             if (fornecedor.Cadastrar(fornecedor))
             {
-                DateTime dataHoraAtualUtc = DateTime.Now;
-                Acao ac = new Acao(0,u.NomeUsuario,"cadastrar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeFornecedor);
+                DateTime dataHoraAtual = DateTime.Now;
+                Acao ac = new Acao(0,u.NomeUsuario,"cadastrar", dataHoraAtual, fornecedor.Nome);
 
                 //salva o objeto de ação e atualiza a lista de ações
                 string objtacao = JsonConvert.SerializeObject(ac);
                 return RedirectToAction("RegistrarAcao", "Acao", new {objtacao});
 
             }
+
             return RedirectToAction("Formulario", "Fornecedor");
 
         }
-
-        public IActionResult Deletar(string cnpj, string nomeF)
+        public IActionResult Deletar(string jfornecedor)
         {
-            Fornecedor fornecedor = new();
-            if (fornecedor.DeletarFornecedor(cnpj))
+            Fornecedor fornecedor = JsonConvert.DeserializeObject<Fornecedor>(jfornecedor);
+            if (fornecedor.DeletarFornecedor(fornecedor.Id))
             {
                 Usuario us = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("usuario"));
-                DateTime dataHoraAtualUtc = DateTime.Now;
+                DateTime dataHoraAtual = DateTime.Now;
 
-                Acao ac = new Acao(0, us.NomeUsuario, "deletar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeF);
+                Acao ac = new Acao(0, us.NomeUsuario, "deletar", dataHoraAtual, fornecedor.Nome);
 
                 string objtacao = JsonConvert.SerializeObject(ac);
                 return RedirectToAction("RegistrarAcao", "Acao", new {objtacao});
             }
             return RedirectToAction("Index", "Home"); ;
         }
-
-        public IActionResult Alterar(int id, string nomeFornecedor, string cnpj, string contato, string email,string grupoT, string vencimentoFatura, string anotacao)
-         {
-            Fornecedor fornecedor = new Fornecedor(id, nomeFornecedor,cnpj,contato,email,anotacao, grupoT,vencimentoFatura);
+         
+        public IActionResult Alterar(Fornecedor fornecedor)
+        {
+            //Fornecedor fornecedor = new Fornecedor(id, nomeFornecedor,cnpj,contato,email,anotacao, grupoT,  DateOnly.Parse(vencimentoFatura));
 
             if(fornecedor.AlterarFornecedor(fornecedor)) 
             {
                 Usuario u = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("usuario"));
-                DateTime dataHoraAtualUtc = DateTime.Now;
-
-                Acao ac = new Acao(0, u.NomeUsuario, "alterar", dataHoraAtualUtc.ToString("dd/MM/yyyy HH:mm:ss"), nomeFornecedor);
-
+                Acao ac = new Acao(0, u.NomeUsuario, "alterar", DateTime.Now, fornecedor.Nome);
                 //salva o objeto de ação e atualiza a lista de ações
                 string objtacao = JsonConvert.SerializeObject(ac);
                 return RedirectToAction("RegistrarAcao", "Acao", new { objtacao });
@@ -61,7 +57,6 @@ namespace AgendaFornecedores.Controllers
 
             return View();
         }
-
 
         public IActionResult redirecionarDados(string jfornecedor)
         {

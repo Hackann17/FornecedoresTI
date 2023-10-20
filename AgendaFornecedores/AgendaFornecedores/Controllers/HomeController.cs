@@ -16,7 +16,15 @@ namespace AgendaFornecedores.Controllers
 
         public IActionResult Index()
         {
-            return View(Fornecedor.listarFornecedores());
+            if (HttpContext.Session.GetString("usuario") != null)
+            {
+                return View(Fornecedor.listarFornecedores());
+            }
+            else
+            {
+                return View();
+            }
+
         }
 
         public IActionResult ListadeAcoes()
@@ -69,12 +77,10 @@ namespace AgendaFornecedores.Controllers
             return View(GrupoAcesso.listarGrupos());
         }
 
-
         public IActionResult Sair()
         {
             HttpContext.Session.Remove("usuario");
             return RedirectToAction("Index", "Home");
         }
-
     }
 }

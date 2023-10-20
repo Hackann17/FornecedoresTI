@@ -1,6 +1,6 @@
 ﻿
 using MySql.Data.MySqlClient;
-
+using System.Data.SqlClient;
 
 namespace AgendaFornecedores.Models
 {
@@ -13,10 +13,10 @@ namespace AgendaFornecedores.Models
         string email;
         string anotacao;
         string grupoTrabalho;
-        string vencimentoFatura;
+        DateOnly vencimentoFatura;
 
         public Fornecedor() { }
-        public Fornecedor(int id, string nome, string cnpj, string contato, string email, string anotacao, string grupo_trabalho, string vencimentoFatura)
+        public Fornecedor(int id, string nome, string cnpj, string contato, string email, string anotacao, string grupo_trabalho, DateOnly vencimentoFatura)
         {
             this.id = id;
             this.nome = nome;
@@ -34,13 +34,13 @@ namespace AgendaFornecedores.Models
         public string Email { get => email; set => email = value; }
         public string Anotacao { get => anotacao; set => anotacao = value; }
         public string Grupo_trabalho { get => grupoTrabalho; set => grupoTrabalho = value; }
-        public string VencimentoFatura { get => vencimentoFatura; set => vencimentoFatura = value; }
+        public DateOnly VencimentoFatura { get => vencimentoFatura; set => vencimentoFatura = value; }
         public int Id { get => id; set => id = value; }
 
 
         public bool Cadastrar(Fornecedor fornecedor)
         {
-            MySqlConnection con = new MySqlConnection(SQL.SConexao());
+            SqlConnection con = new SqlConnection(SQL.SConexao());
             //INSERT INTO `agenda_fornecedores`.`grupos_permitidos` (`id`, `nome_grupos`) VALUES ('0', 'GG_TI');
 
             try
@@ -51,14 +51,34 @@ namespace AgendaFornecedores.Models
                 if (SQL.Procurar("fornecedores",colunas, parametros))
                 {
                     con.Open();
-                    string insert = $"insert into fornecedores(nome, cnpj, contato, email, anotacao, grupo_trabalho, vencimento_fatura)" +
-                   $"values('{fornecedor.nome}','{fornecedor.Cnpj}','{fornecedor.Contato}','{fornecedor.Email}','{fornecedor.Anotacao}','{fornecedor.Grupo_trabalho}',{fornecedor.VencimentoFatura})";
-                   
-                    MySqlCommand mySqlCommand = new MySqlCommand(insert, con);
 
-                    mySqlCommand.ExecuteNonQuery();
+                    //"insert next value for tabela_seq"
+                    //"select next value for tabela_seq as seq_value"
+                    /*
+                    string selectseq = $"select next value for fornecedores_seq as id";
 
-                    return true;
+                    SqlCommand command = new SqlCommand(selectseq, con);
+                    SqlDataReader leitor = command.ExecuteReader();
+
+                    if (leitor.Read())
+                    {
+                        string insert = $"insert into fornecedores( nome, cnpj, contato, email, anotacao, grupo_trabalho, vencimento_fatura)" +
+                                           $"values('{fornecedor.nome}','{fornecedor.Cnpj}','{fornecedor.Contato}','{fornecedor.Email}','{fornecedor.Anotacao}','{fornecedor.Grupo_trabalho}','{fornecedor.VencimentoFatura.ToString("yyyy-MM-dd")}')";
+                        SqlCommand mySqlCommand = new SqlCommand(insert, con);
+                        leitor.Close();
+                        mySqlCommand.ExecuteNonQuery();
+                        return true;
+
+                    }*/
+
+                     string insert = $"insert into fornecedores(id, nome, cnpj, contato, email, anotacao, grupo_trabalho, vencimento_fatura)" +
+                     $"values(NEXT VALUE FOR fornecedores_seq,'{fornecedor.Nome}','{fornecedor.Cnpj}','{fornecedor.Contato}','{fornecedor.Email}','{fornecedor.Anotacao}','{fornecedor.Grupo_trabalho}','{fornecedor.VencimentoFatura.ToString("yyyy-MM-dd")}')";
+
+                      SqlCommand mySqlCommand = new SqlCommand(insert, con);
+
+                      mySqlCommand.ExecuteNonQuery();
+
+                      return true;
                 }
                 
                 return false;
@@ -75,7 +95,7 @@ namespace AgendaFornecedores.Models
         }
         public static List<Fornecedor> listarFornecedores()
         {
-            MySqlConnection con = new MySqlConnection(SQL.SConexao());
+            SqlConnection con = new SqlConnection(SQL.SConexao());
 
             List<Fornecedor> fornecedores = new List<Fornecedor>();
             try
@@ -84,8 +104,8 @@ namespace AgendaFornecedores.Models
 
                 //organizar lista de fornecedores pelo mais proximo do vencimento da fatura...
 
-                MySqlCommand sqlCommand = new MySqlCommand("select * from fornecedores", con);
-                MySqlDataReader leitor = sqlCommand.ExecuteReader();
+                SqlCommand sqlCommand = new SqlCommand("select * from fornecedores", con);
+                SqlDataReader leitor = sqlCommand.ExecuteReader();
 
                 while (leitor.Read())
                 {
@@ -98,17 +118,15 @@ namespace AgendaFornecedores.Models
                     string grupoTrab = leitor["grupo_trabalho"].ToString();
 
                     //o ParseExact gera um objeto datetime modelave, sigando o contexto da aplicação e algumas diretrizes
-                    DateTime dataH = DateTime.ParseExact(leitor["vencimento_fatura"].ToString(), "dd/MM/yyyy HH:mm:ss",null);
-                    string vencimento = dataH.ToString("dd/MM/yyyy");
+                    DateOnly vencimento = DateOnly.ParseExact(leitor["vencimento_fatura"].ToString(), "dd/MM/yyyy 00:00:00",null);
 
                     Fornecedor fornecedor = new(id, nome, cnpj, contato, email, anotacao,grupoTrab,vencimento);
 
                     fornecedores.Add(fornecedor);
                 }
-                //organizar lista de fornecedores pelo mais proximo do vencimento da fatura...
 
-                List<DateOnly> datasfornecedores = fornecedores.Select(forn => DateOnly.ParseExact(forn.VencimentoFatura, "dd/MM/yyyy", null)).OrderBy(d => d).ToList();
-
+                //organiza a lista de forma crescente da data mais recente para a mais antiga
+                fornecedores = fornecedores.OrderBy(forn => forn.VencimentoFatura).ToList();
                 return fornecedores;
 
             }
@@ -118,18 +136,18 @@ namespace AgendaFornecedores.Models
 
         }
 
-        public bool DeletarFornecedor(string cnpj)
+        public bool DeletarFornecedor(int id)
         {
-            MySqlConnection con = new(SQL.SConexao());
+                SqlConnection con = new(SQL.SConexao());
 
             try
             {
                 con.Open();
-
-                List<string> colunas = new List<string>{"cnpj"};
-                List<string> parametros = new List<string> { cnpj };
-                if(SQL.SDeletar("fornecedores",colunas,parametros))return true;
+                string delete = $"DELETE FROM fornecedores WHERE id = {id}";
+                SqlCommand mySqlCommand = new SqlCommand(delete,con);
+                if (mySqlCommand.ExecuteNonQuery()!= null) return true;
                 return false;
+
             }
             catch
             { return false; }
@@ -141,19 +159,40 @@ namespace AgendaFornecedores.Models
 
         internal bool AlterarFornecedor(Fornecedor fornecedor)
         {
+            //"UPDATE Tabela SET Propriedade1 = @Valor1, Propriedade2 = @Valor2 WHERE ID = @ID"
+            SqlConnection con = new(SQL.SConexao());
             try
             {
-                List<string> cols = new List<string> { "id","nome","cnpj","contato","email","anotacao","grupo_trabalho","vencimento_fatura"};
-                List<string> valores = new List<string> {fornecedor.Id.ToString(), fornecedor.Nome, fornecedor.Cnpj,fornecedor.Contato,fornecedor.Email,
-                fornecedor.anotacao,fornecedor.Grupo_trabalho,fornecedor.VencimentoFatura};
+                con.Open();
+                string alterar = $"UPDATE fornecedores SET nome = '{fornecedor.Nome}', cnpj = '{fornecedor.Cnpj}'," +
+                    $" contato = '{fornecedor.Contato}', email = '{fornecedor.Email}', anotacao = '{fornecedor.Anotacao}'," +
+                    $"vencimento_fatura = '{fornecedor.VencimentoFatura.ToString("yyyy/MM/dd")}' where id = {fornecedor.Id}";
+                SqlCommand mySql = new SqlCommand(alterar, con);
 
-                SQL sQL = new SQL();
-                if (sQL.AlterarDados("fornecedores", cols, valores)) return true;
-
+                if(mySql.ExecuteNonQuery() != null)return true;
                 return false;
             }
             catch { return false; }
+            finally { con.Close(); }
+        }
 
+        //funcionalidade que atualiza as datas de vencimento para o proximo me altomaticamente após o vencimento da fatura.
+
+        public void VerificaFatura(List<Fornecedor> fornecedores)
+        {
+            DateOnly hoje = DateOnly.FromDateTime(DateTime.Now);
+            foreach (var fornecedor in fornecedores)
+            {
+                // verificar se a data estiver ha  duas semanas de vencer
+                if (fornecedor.VencimentoFatura.Day <= hoje.Day)
+                {
+                    //metodo de envio de email
+                    //atualizar no banco de dados
+                }
+                else
+                {
+                }
+            }
         }
     }
 }
