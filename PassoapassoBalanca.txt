@@ -1,0 +1,23 @@
+etapas para configuração da balançaweb
+
+1= Ativar o tps do .net frameowork 3.0 e 2.0 
+2= Mudar a porta de comunicação para com2
+3= Mudar nome de compartilhamento da argox para o mesmo que o program da balança gera 
+
+
+Script de preparação das maquinas para balança:
+
+1- Formatação
+2- atualização via windows update
+3- instalação de drive PCI (Z:\SOFTWARES\Drivers\Dell Optiplex780)
+4- GLPI (http://192.168.0.20/glpi)
+5- VNC
+6- BITdefender
+7- colocar no dominio
+8- confiugurar usuario local
+9- argox
+10- testes
+balanca pesa?
+rodar o hercules na COM2
+11- 
+

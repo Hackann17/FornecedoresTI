@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "WQ5Zx1TFL2alIcsu1BoWMYcS/RX+BicfB9OAHWfaqrlIcXpovS9R3SiEJdCBHtwmnS9TI6Gc8RA7W0h6nJX4Pg==",
+  "dgSpecHash": "37WVnGdJZDnjdZmgkii/wU+gv+nv1yaCKMqC/0rJueapeHA/tEuCf11pV3F8FlnNjgm4a/Vv+4uj/JhBB7tlzg==",
   "success": true,
   "projectFilePath": "C:\\Users\\pedro.godinho\\Documents\\Pedro\\AgendaFornecedores\\AgendaFornecedores\\AgendaFornecedores.csproj",
   "expectedPackageFiles": [
@@ -78,6 +78,8 @@
     "C:\\Users\\pedro.godinho\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\7.0.0\\microsoft.extensions.dependencyinjection.7.0.0.nupkg.sha512",
     "C:\\Users\\pedro.godinho\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0\\microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
     "C:\\Users\\pedro.godinho\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\5.0.0\\microsoft.extensions.logging.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\pedro.godinho\\.nuget\\packages\\microsoft.identity.client\\4.57.0\\microsoft.identity.client.4.57.0.nupkg.sha512",
+    "C:\\Users\\pedro.godinho\\.nuget\\packages\\microsoft.identitymodel.abstractions\\6.22.0\\microsoft.identitymodel.abstractions.6.22.0.nupkg.sha512",
     "C:\\Users\\pedro.godinho\\.nuget\\packages\\microsoft.net.stringtools\\17.3.2\\microsoft.net.stringtools.17.3.2.nupkg.sha512",
     "C:\\Users\\pedro.godinho\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
     "C:\\Users\\pedro.godinho\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",

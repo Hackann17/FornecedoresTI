@@ -18,7 +18,35 @@ namespace AgendaFornecedores.Controllers
         {
             if (HttpContext.Session.GetString("usuario") != null)
             {
-                return View(Fornecedor.listarFornecedores());
+                if (TempData["fornecedores"] == null)
+                {
+                    List<Fornecedor> fornecedores = Fornecedor.listarFornecedores();
+
+                    TempData["fornecedores"] = fornecedores;
+                    TempData["Verifica faturas"] = true;
+
+                    //teste, o ideal é esse metodo ser chamado somente no seu controller respectivo
+                    Fornecedor forn = new Fornecedor();
+                    forn.AnaliseVencFatura(fornecedores);
+                    TempData["Verifica faturas"] = true;
+
+                    // string forns = JsonConvert.SerializeObject(fornecedores);
+                    // return RedirectToAction("AnaliseVencFatura", "Fornecedor", new { forns });
+
+                }
+                if ((bool)TempData["Verifica faturas"])
+                {
+                    //nesse caso a lista as datas de evncimento ja foram verificadas
+                    return View(TempData["fornecedores"]);
+                }
+                else
+                {
+                    //nesse caso elas nao foram verificadas ainda
+                    string forns = JsonConvert.SerializeObject(TempData["fornecedores"]);
+                    return RedirectToAction("AnaliseVencFatura", "Fornecedor" , new {forns});
+
+                }
+
             }
             else
             {
@@ -62,6 +90,8 @@ namespace AgendaFornecedores.Controllers
                 //serializa o atentificado em um sessao
                 
                 HttpContext.Session.SetString("usuario",JsonConvert.SerializeObject(autentificação));
+                //redirecion para que a verificação da lista de fornecedores seja revisada
+
                 return RedirectToAction("Index", "Home");
             }
             else

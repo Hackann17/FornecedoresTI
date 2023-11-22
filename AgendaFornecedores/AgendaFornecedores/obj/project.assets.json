@@ -1269,6 +1269,35 @@
           }
         }
       },
+      "Microsoft.Identity.Client/4.57.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Abstractions": "6.22.0"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.Identity.Client.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.Identity.Client.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.IdentityModel.Abstractions/6.22.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Microsoft.IdentityModel.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.IdentityModel.Abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.NET.StringTools/17.3.2": {
         "type": "package",
         "dependencies": {
@@ -5165,6 +5194,61 @@
         "microsoft.extensions.logging.abstractions.nuspec",
         "useSharedDesignerContext.txt",
         "version.txt"
+      ]
+    },
+    "Microsoft.Identity.Client/4.57.0": {
+      "sha512": "cE6FQvNIh9Brcok/JztOQa3t62XftatH7+Oi/PK6HbQAIpKyAuIj/ac4P9VrwPW+S2MkLR1/jEY5rXpLoHBC/w==",
+      "type": "package",
+      "path": "microsoft.identity.client/4.57.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/monoandroid10.0/Microsoft.Identity.Client.dll",
+        "lib/monoandroid10.0/Microsoft.Identity.Client.xml",
+        "lib/monoandroid90/Microsoft.Identity.Client.dll",
+        "lib/monoandroid90/Microsoft.Identity.Client.xml",
+        "lib/net45/Microsoft.Identity.Client.dll",
+        "lib/net45/Microsoft.Identity.Client.xml",
+        "lib/net461/Microsoft.Identity.Client.dll",
+        "lib/net461/Microsoft.Identity.Client.xml",
+        "lib/net6.0-android31.0/Microsoft.Identity.Client.dll",
+        "lib/net6.0-android31.0/Microsoft.Identity.Client.xml",
+        "lib/net6.0-ios15.4/Microsoft.Identity.Client.dll",
+        "lib/net6.0-ios15.4/Microsoft.Identity.Client.xml",
+        "lib/net6.0-windows7.0/Microsoft.Identity.Client.dll",
+        "lib/net6.0-windows7.0/Microsoft.Identity.Client.xml",
+        "lib/net6.0/Microsoft.Identity.Client.dll",
+        "lib/net6.0/Microsoft.Identity.Client.xml",
+        "lib/netstandard2.0/Microsoft.Identity.Client.dll",
+        "lib/netstandard2.0/Microsoft.Identity.Client.xml",
+        "lib/uap10.0.17763/Microsoft.Identity.Client.dll",
+        "lib/uap10.0.17763/Microsoft.Identity.Client.pri",
+        "lib/uap10.0.17763/Microsoft.Identity.Client.xml",
+        "lib/xamarinios10/Microsoft.Identity.Client.dll",
+        "lib/xamarinios10/Microsoft.Identity.Client.xml",
+        "microsoft.identity.client.4.57.0.nupkg.sha512",
+        "microsoft.identity.client.nuspec"
+      ]
+    },
+    "Microsoft.IdentityModel.Abstractions/6.22.0": {
+      "sha512": "iI+9V+2ciCrbheeLjpmjcqCnhy+r6yCoEcid3nkoFWerHgjVuT6CPM4HODUTtUPe1uwks4wcnAujJ8u+IKogHQ==",
+      "type": "package",
+      "path": "microsoft.identitymodel.abstractions/6.22.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net45/Microsoft.IdentityModel.Abstractions.dll",
+        "lib/net45/Microsoft.IdentityModel.Abstractions.xml",
+        "lib/net461/Microsoft.IdentityModel.Abstractions.dll",
+        "lib/net461/Microsoft.IdentityModel.Abstractions.xml",
+        "lib/net472/Microsoft.IdentityModel.Abstractions.dll",
+        "lib/net472/Microsoft.IdentityModel.Abstractions.xml",
+        "lib/net6.0/Microsoft.IdentityModel.Abstractions.dll",
+        "lib/net6.0/Microsoft.IdentityModel.Abstractions.xml",
+        "lib/netstandard2.0/Microsoft.IdentityModel.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.IdentityModel.Abstractions.xml",
+        "microsoft.identitymodel.abstractions.6.22.0.nupkg.sha512",
+        "microsoft.identitymodel.abstractions.nuspec"
       ]
     },
     "Microsoft.NET.StringTools/17.3.2": {
@@ -10468,6 +10552,7 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
+      "Microsoft.Identity.Client >= 4.57.0",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 7.0.9",
       "MySql.Data >= 8.1.0",
       "MySqlConnector >= 2.2.7",
@@ -10521,6 +10606,10 @@
       "net7.0": {
         "targetAlias": "net7.0",
         "dependencies": {
+          "Microsoft.Identity.Client": {
+            "target": "Package",
+            "version": "[4.57.0, )"
+          },
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
             "target": "Package",
             "version": "[7.0.9, )"

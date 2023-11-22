@@ -1,0 +1,17 @@
+2023-11-21 10:09:48,670 [1] INFO  - mRemoteNG 1.76.20.24669 Edição portátil starting.
+2023-11-21 10:09:48,695 [1] INFO  - Command Line: C:\Users\pedro.godinho\Documents\Pedro\mRemoteNG-Portable-1.76.20.24669\mRemoteNG.exe
+2023-11-21 10:09:50,297 [1] INFO  - Microsoft Windows 10 Pro  64-bit
+2023-11-21 10:09:50,297 [1] INFO  - Microsoft .NET CLR 4.0.30319.42000
+2023-11-21 10:09:50,297 [1] INFO  - System Culture: pt-BR/português (Brasil)
+2023-11-21 10:09:50,297 [1] INFO  - Checking FIPS Policy...
+2023-11-21 10:09:50,297 [1] INFO  - Checking Lenovo AutoScroll Utility...
+2023-11-21 10:09:50,413 [1] WARN  - Loading External Apps failed: Could not FIND file!
+2023-11-21 10:09:50,935 [1] INFO  - Saving connections...
+2023-11-21 10:09:50,979 [1] INFO  - Successfully saved connections
+2023-11-21 10:09:51,261 [1] WARN  - PuttySessions.Watcher.StartWatching() failed.
+Não encontrado 
+2023-11-21 10:09:51,261 [1] WARN  - XmingPortablePuttySessions.Watcher.StartWatching() failed: 'sessions' does not exist.
+2023-11-21 10:10:15,090 [10] INFO  - Saving connections...
+2023-11-21 10:10:15,114 [10] INFO  - Successfully saved connections
+2023-11-21 11:46:10,496 [1] INFO  - Saving connections...
+2023-11-21 11:46:10,507 [1] INFO  - Successfully saved connections

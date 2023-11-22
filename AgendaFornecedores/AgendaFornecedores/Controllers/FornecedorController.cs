@@ -70,5 +70,20 @@ namespace AgendaFornecedores.Controllers
             return View();
         }
 
+
+       public IActionResult AnaliseVencFatura(string forns)
+        {
+            List<Fornecedor> fornes = JsonConvert.DeserializeObject<List<Fornecedor>>(forns);
+            Fornecedor forn  =  new Fornecedor();
+
+            forn.AnaliseVencFatura(fornes);
+            TempData["Verifica faturas"] = true;
+
+            return RedirectToAction("Index", "Home");
+        }
+
+
+
+
     }
 }

@@ -1,6 +1,9 @@
 ﻿
-using MySql.Data.MySqlClient;
 using System.Data.SqlClient;
+using System.Net.Mail;
+using System.Net;
+using System.Runtime.Intrinsics.X86;
+using Newtonsoft.Json;
 
 namespace AgendaFornecedores.Models
 {
@@ -45,42 +48,23 @@ namespace AgendaFornecedores.Models
 
             try
             {
-                List<string> colunas = new List<string> { "cnpj"};
+                List<string> colunas = new List<string> { "cnpj" };
                 List<string> parametros = new List<string> { fornecedor.Cnpj };
 
-                if (SQL.Procurar("fornecedores",colunas, parametros))
+                if (SQL.Procurar("fornecedores", colunas, parametros))
                 {
                     con.Open();
 
-                    //"insert next value for tabela_seq"
-                    //"select next value for tabela_seq as seq_value"
-                    /*
-                    string selectseq = $"select next value for fornecedores_seq as id";
+                    string insert = $"insert into fornecedores(id, nome, cnpj, contato, email, anotacao, grupo_trabalho, vencimento_fatura)" +
+                    $"values(NEXT VALUE FOR fornecedores_seq,'{fornecedor.Nome}','{fornecedor.Cnpj}','{fornecedor.Contato}','{fornecedor.Email}','{fornecedor.Anotacao}','{fornecedor.Grupo_trabalho}','{fornecedor.VencimentoFatura.ToString("yyyy-MM-dd")}')";
 
-                    SqlCommand command = new SqlCommand(selectseq, con);
-                    SqlDataReader leitor = command.ExecuteReader();
+                    SqlCommand mySqlCommand = new SqlCommand(insert, con);
 
-                    if (leitor.Read())
-                    {
-                        string insert = $"insert into fornecedores( nome, cnpj, contato, email, anotacao, grupo_trabalho, vencimento_fatura)" +
-                                           $"values('{fornecedor.nome}','{fornecedor.Cnpj}','{fornecedor.Contato}','{fornecedor.Email}','{fornecedor.Anotacao}','{fornecedor.Grupo_trabalho}','{fornecedor.VencimentoFatura.ToString("yyyy-MM-dd")}')";
-                        SqlCommand mySqlCommand = new SqlCommand(insert, con);
-                        leitor.Close();
-                        mySqlCommand.ExecuteNonQuery();
-                        return true;
+                    mySqlCommand.ExecuteNonQuery();
 
-                    }*/
-
-                     string insert = $"insert into fornecedores(id, nome, cnpj, contato, email, anotacao, grupo_trabalho, vencimento_fatura)" +
-                     $"values(NEXT VALUE FOR fornecedores_seq,'{fornecedor.Nome}','{fornecedor.Cnpj}','{fornecedor.Contato}','{fornecedor.Email}','{fornecedor.Anotacao}','{fornecedor.Grupo_trabalho}','{fornecedor.VencimentoFatura.ToString("yyyy-MM-dd")}')";
-
-                      SqlCommand mySqlCommand = new SqlCommand(insert, con);
-
-                      mySqlCommand.ExecuteNonQuery();
-
-                      return true;
+                    return true;
                 }
-                
+
                 return false;
             }
             catch
@@ -118,34 +102,130 @@ namespace AgendaFornecedores.Models
                     string grupoTrab = leitor["grupo_trabalho"].ToString();
 
                     //o ParseExact gera um objeto datetime modelave, sigando o contexto da aplicação e algumas diretrizes
-                    DateOnly vencimento = DateOnly.ParseExact(leitor["vencimento_fatura"].ToString(), "dd/MM/yyyy 00:00:00",null);
+                    DateOnly vencimento = DateOnly.ParseExact(leitor["vencimento_fatura"].ToString(), "dd/MM/yyyy 00:00:00", null);
 
-                    Fornecedor fornecedor = new(id, nome, cnpj, contato, email, anotacao,grupoTrab,vencimento);
+                    Fornecedor fornecedor = new(id, nome, cnpj, contato, email, anotacao, grupoTrab, vencimento);
 
                     fornecedores.Add(fornecedor);
                 }
 
                 //organiza a lista de forma crescente da data mais recente para a mais antiga
                 fornecedores = fornecedores.OrderBy(forn => forn.VencimentoFatura).ToList();
+
                 return fornecedores;
 
             }
 
-            catch (Exception ex){ return fornecedores; }
+            catch (Exception ex) { return fornecedores; }
             finally { con.Close(); }
 
         }
 
+        public void AnaliseVencFatura(List<Fornecedor> fornecedores)
+        { 
+            DateOnly hoje = DateOnly.FromDateTime(DateTime.Now);
+            foreach (var fornecedor in fornecedores)
+            {
+                // verificar se a data estiver ha  duas semanas de vencer
+
+                if (fornecedor.VencimentoFatura.Month == hoje.Month)
+                {
+                    if (fornecedor.VencimentoFatura.Day - hoje.Day <= 7)
+                    {
+                        if (CriaEnviaEmail(fornecedor))
+                        {
+                            //atualizar no banco de dados
+                            AtualizaVencimentoFatura(fornecedor);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool CriaEnviaEmail(Fornecedor fornecedor)
+        {
+            //Instancia o Objeto Email como MailMessage 
+            MailMessage Email = new MailMessage();
+
+            //Atribui ao método From o valor do Remetente 
+            Email.From = new MailAddress("TI@bsstex.com.br");
+
+            // Atribui o destinatário
+            Email.To.Add(new MailAddress("pedro.godinho@bsstex.com.br"));
+
+            // Adiciona um com cópia oculta
+            Email.Bcc.Add(new MailAddress("email3@dominio"));
+
+            //Atribui ao método Subject o assunto da mensagem 
+            Email.Subject = $"Fatura vencimento {fornecedor.VencimentoFatura}";
+
+            // Define o formato da mensagem (Texto ou Html)
+            Email.IsBodyHtml = false; // Defina como true se for HTML
+
+            //Atribui ao método Body a texto da mensagem 
+            Email.Body = $"A fatura do fornecedor{fornecedor.Nome} vencerá semana que vem preste atenção";
+
+            // Configura as credenciais do servidor SMTP (caso necessário)
+            NetworkCredential credenciais = new NetworkCredential("pedro.godinho", "Bsspgodinho1#a"); // Preencha com suas credenciais se necessário
+
+            // Configura o cliente SMTP
+            SmtpClient client = new SmtpClient
+            {
+                Host = "email - ssl.com.br",
+                Port =  465, // Porta padrão para SMTP
+                EnableSsl = true, // Se o servidor utiliza SSL
+                Credentials = credenciais, // Atribui as credenciais aqui
+                DeliveryMethod = SmtpDeliveryMethod.Network // Método de entrega
+            };
+
+            try
+            {
+                // Enviar o e-mail
+                //Envia a mensagem baseado nos dados do objeto Email 
+                client.Send(Email);
+                return true;
+             
+            }
+            catch(Exception ex) 
+            {
+                return false;
+            }
+            finally
+            {
+                // Libera os recursos
+                Email.Dispose();
+            }
+        }
+
+        private static void AtualizaVencimentoFatura(Fornecedor forn)
+        {
+            //após o email ser enviado o sistema atualiza o banco de dados
+
+            SqlConnection con = new SqlConnection(SQL.SConexao());
+            try
+            {
+                con.Open();
+
+                string inserir = $"update * from fornecedores set vencimento_fatura = DATEADD(day, 30,vencimento_fatura )" +
+                    $"  where vencimento_fatura = {forn.VencimentoFatura}";
+                SqlCommand sqlCommand = new SqlCommand();
+                sqlCommand.ExecuteNonQuery();
+            }
+
+            finally { con.Close(); }
+        }
+
         public bool DeletarFornecedor(int id)
         {
-                SqlConnection con = new(SQL.SConexao());
+            SqlConnection con = new(SQL.SConexao());
 
             try
             {
                 con.Open();
                 string delete = $"DELETE FROM fornecedores WHERE id = {id}";
-                SqlCommand mySqlCommand = new SqlCommand(delete,con);
-                if (mySqlCommand.ExecuteNonQuery()!= null) return true;
+                SqlCommand mySqlCommand = new SqlCommand(delete, con);
+
+                if (mySqlCommand.ExecuteNonQuery() != null) return true;
                 return false;
 
             }
@@ -169,30 +249,13 @@ namespace AgendaFornecedores.Models
                     $"vencimento_fatura = '{fornecedor.VencimentoFatura.ToString("yyyy/MM/dd")}' where id = {fornecedor.Id}";
                 SqlCommand mySql = new SqlCommand(alterar, con);
 
-                if(mySql.ExecuteNonQuery() != null)return true;
+                if (mySql.ExecuteNonQuery() != null) return true;
                 return false;
             }
             catch { return false; }
             finally { con.Close(); }
         }
-
-        //funcionalidade que atualiza as datas de vencimento para o proximo me altomaticamente após o vencimento da fatura.
-
-        public void VerificaFatura(List<Fornecedor> fornecedores)
-        {
-            DateOnly hoje = DateOnly.FromDateTime(DateTime.Now);
-            foreach (var fornecedor in fornecedores)
-            {
-                // verificar se a data estiver ha  duas semanas de vencer
-                if (fornecedor.VencimentoFatura.Day <= hoje.Day)
-                {
-                    //metodo de envio de email
-                    //atualizar no banco de dados
-                }
-                else
-                {
-                }
-            }
-        }
     }
 }
+
+

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Asn1.X509;
 using System.Data.SqlClient;
 
 namespace AgendaFornecedores.Models
@@ -69,7 +70,9 @@ namespace AgendaFornecedores.Models
             {
                 con.Open();
 
-                SqlCommand SqlCommand = new SqlCommand("select * from acoes",con);
+                //SELECT TOP 20 * FROM sua_tabela ORDER BY data_insercao DESC;
+
+                SqlCommand SqlCommand = new SqlCommand("select top 20 * from acoes order by id desc",con);
                 SqlDataReader leitor = SqlCommand.ExecuteReader();
 
                 while (leitor.Read())

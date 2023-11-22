@@ -60,23 +60,25 @@ else {
             @foreach (Fornecedor fornecedor in Model)
             {
                 DateOnly dvenc = fornecedor.VencimentoFatura;
-                string[] atributos = { fornecedor.Nome, fornecedor.Cnpj, fornecedor.Email, fornecedor.Contato,
-                  fornecedor.VencimentoFatura.ToString(),fornecedor.Anotacao };
+              
+
+                int hoje = DateTime.Now.Day;
 
                 <li class="row">
-                    @for(int i = 0 ; i < atributos.Length; i++)
-                    {
-                        if (atributos[i].Equals(dvenc))
-                        {
-                            <p class="col text-start" style=" background-color:red;" value="@atributos[i]">@atributos[i]</p>
+                  
+                    <p class="col text-start" value="@fornecedor.Nome">@fornecedor.Nome</p>
+                    <p class="col text-start" value="@fornecedor.Cnpj">@fornecedor.Cnpj</p>
+                    <p class="col text-start" value="@fornecedor.Email">@fornecedor.Email</p>
+                    <p class="col text-start" value="@fornecedor.Contato">@fornecedor.Contato</p>
 
-                        }
-                        <p class="col text-start" value="@atributos[i]">@atributos[i]</p>
-                    }
+                    <p class="col text-start" value="@fornecedor.VencimentoFatura">@fornecedor.VencimentoFatura</p>
+
+                    <p class="col text-start" value="@fornecedor.Anotacao">@fornecedor.Anotacao</p>
 
                     @if (user.Midadm)
                     {
                         string jfornecedor = JsonConvert.SerializeObject(fornecedor);
+
                         <form class="col btn" onsubmit="return Alterar()" asp-controller="Fornecedor" asp-action="redirecionarDados">
                             <input value="@jfornecedor " hidden name="jfornecedor">
 
