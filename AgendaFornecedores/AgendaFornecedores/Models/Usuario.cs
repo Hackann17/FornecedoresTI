@@ -21,7 +21,6 @@ namespace AgendaFornecedores.Models
             this.fulladm = fulladm;
             
         }
-
         public string NomeUsuario { get => nomeUsuario; set => nomeUsuario = value; }
         public string SenhaUsuario { get => senhaUsuario; set => senhaUsuario = value; }
         public bool Midadm { get => midadm; set => midadm = value; }

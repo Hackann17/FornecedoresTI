@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Asn1.X509;
 using System.Data.SqlClient;
@@ -12,7 +13,6 @@ namespace AgendaFornecedores.Models
         DateTime data;
         string action;
         string nomeFornecedor;
-
         public Acao() { }
         public Acao(int id, string nomeUsuario, string action, DateTime data, string nomeFornecedor)
         {
@@ -31,8 +31,6 @@ namespace AgendaFornecedores.Models
 
         public string NomeFornecedor { get => nomeFornecedor; set => nomeFornecedor = value; }
         public int Id { get => id; set => id = value; }
-
-
         public  bool AdiconarAcao( Acao action)
         {
             SqlConnection con = new (SQL.SConexao());
@@ -40,12 +38,9 @@ namespace AgendaFornecedores.Models
             try
             {
                 con.Open();
-
                 string insert = "insert into acoes(nome_usuario, acao, nome_fornecedor, data)" +
                     $"values('{action.NomeUsuario}','{action.Action}','{action.NomeFornecedor}', '{action.Data}')";
-
                 SqlCommand SqlCommand = new SqlCommand(insert, con); 
-
                 SqlCommand.ExecuteNonQuery();
 
                 return true;
@@ -60,7 +55,6 @@ namespace AgendaFornecedores.Models
                 con.Close();
             }
         }
-
         public static List<Acao> listarAcoes()
         {
             SqlConnection con = new SqlConnection(SQL.SConexao());
@@ -69,7 +63,6 @@ namespace AgendaFornecedores.Models
             try
             {
                 con.Open();
-
                 //SELECT TOP 20 * FROM sua_tabela ORDER BY data_insercao DESC;
 
                 SqlCommand SqlCommand = new SqlCommand("select top 20 * from acoes order by id desc",con);
@@ -94,7 +87,6 @@ namespace AgendaFornecedores.Models
             catch { return acoes; }
 
             finally { con.Close(); }
-
         }
     }
 }

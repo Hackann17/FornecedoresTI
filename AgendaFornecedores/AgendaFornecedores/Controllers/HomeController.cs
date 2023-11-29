@@ -13,48 +13,17 @@ namespace AgendaFornecedores.Controllers
         {
             _logger = logger;
         }
-
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("usuario") != null)
             {
-                if (TempData["fornecedores"] == null)
-                {
                     List<Fornecedor> fornecedores = Fornecedor.listarFornecedores();
 
                     TempData["fornecedores"] = fornecedores;
-                    TempData["Verifica faturas"] = true;
-
-                    //teste, o ideal é esse metodo ser chamado somente no seu controller respectivo
-                    Fornecedor forn = new Fornecedor();
-                    forn.AnaliseVencFatura(fornecedores);
-                    TempData["Verifica faturas"] = true;
-
-                    // string forns = JsonConvert.SerializeObject(fornecedores);
-                    // return RedirectToAction("AnaliseVencFatura", "Fornecedor", new { forns });
-
-                }
-                if ((bool)TempData["Verifica faturas"])
-                {
-                    //nesse caso a lista as datas de evncimento ja foram verificadas
                     return View(TempData["fornecedores"]);
-                }
-                else
-                {
-                    //nesse caso elas nao foram verificadas ainda
-                    string forns = JsonConvert.SerializeObject(TempData["fornecedores"]);
-                    return RedirectToAction("AnaliseVencFatura", "Fornecedor" , new {forns});
-
-                }
-
             }
-            else
-            {
-                return View();
-            }
-
+            return View();
         }
-
         public IActionResult ListadeAcoes()
         {
             return View(Acao.listarAcoes());
@@ -71,7 +40,6 @@ namespace AgendaFornecedores.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
 
         [HttpPost]
         public IActionResult Login(string nomeUsuario, string senhaUsuario)
@@ -106,6 +74,13 @@ namespace AgendaFornecedores.Controllers
         {
             return View(GrupoAcesso.listarGrupos());
         }
+
+        public IActionResult EnviarNota()
+        {
+            return View();
+        }
+
+
 
         public IActionResult Sair()
         {

@@ -57,8 +57,13 @@ else {
                 }
                 
             </li>
+            @{
+                List<Fornecedor> forners = new List<Fornecedor>();
+            }
             @foreach (Fornecedor fornecedor in Model)
             {
+                forners.Add(fornecedor);
+
                 DateOnly dvenc = fornecedor.VencimentoFatura;
               
 
@@ -98,7 +103,17 @@ else {
             </ul>
         </section>
     <p class="text-end" style="color:red;">@TempData["deletar"]</p>
+
+    <p></p>
+    <form  asp-controller="Fornecedor" asp-action="AnaliseVencFatura">
+        <input value="@JsonConvert.SerializeObject(forners)" name="forns" hidden>
+
+        <button type="submit">Analisar faturas </button>
+
+    </form>
     }
+
+
 
 <script type="text/javascript" src="~/site.js"></script>
 

@@ -9,12 +9,7 @@ namespace AgendaFornecedores.Models
     {
 
         public static string  SConexao()
-        {
-            //"Data Source=nome_do_servidor;Initial Catalog=nome_do_banco_de_dados;Integrated Security=True;";
-            //"Data Source=nome_do_servidor;Initial Catalog=nome_do_banco_de_dados;User ID=seu_usuario;Password=sua_senha;";
-            //Server=localhost\SQLEXPRESS;Database=agenda_fornecedores;Trusted_Connection=True;
-            //return "Server=localhost;Port=3306;Database=agenda_fornecedores;User Id=root;Password=Ad#2735G";
-
+        { 
             string server = @"TEXTILTI02\SQLEXPRESS";
             string banco = "agenda_fornecedores";
             string usuario = "sa";
@@ -46,7 +41,6 @@ namespace AgendaFornecedores.Models
                 }
                 return false;
             }
-            
             catch (Exception ex)
             {
                 return false;
@@ -122,15 +116,11 @@ namespace AgendaFornecedores.Models
 
                     mySqlCommand.ExecuteNonQuery();
                 }
-                return true;
-
-
+                return true; 
             }
             catch (Exception ex) { return false; }
 
             finally { co.Close(); }
-
-
         }
 
         internal bool AlterarDados(string tabela, List<string> colunas, List<string> valores)
@@ -177,6 +167,4 @@ namespace AgendaFornecedores.Models
             }
         }
     }
-
-
 }

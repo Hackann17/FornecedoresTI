@@ -72,6 +72,10 @@
             "System.DirectoryServices": {
               "target": "Package",
               "version": "[7.0.1, )"
+            },
+            "jQuery": {
+              "target": "Package",
+              "version": "[3.7.1, )"
             }
           },
           "imports": [

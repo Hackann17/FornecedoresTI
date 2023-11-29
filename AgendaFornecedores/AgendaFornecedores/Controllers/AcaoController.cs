@@ -34,6 +34,5 @@ namespace AgendaFornecedores.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
     }
 }

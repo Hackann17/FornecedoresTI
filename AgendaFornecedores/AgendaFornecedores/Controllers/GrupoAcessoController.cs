@@ -28,7 +28,6 @@ namespace AgendaFornecedores.Controllers
             {
                 TempData["grupoAcesso"] = "Grupo apagado comm sucesso";
                 return RedirectToAction("AdicionarGrupoAcesso", "Home");
-
             }
             TempData["grupoAcesso"] = "Houve um erro ao apagar o grupo ...";
             return RedirectToAction("AdicionarGrupoAcesso", "Home");

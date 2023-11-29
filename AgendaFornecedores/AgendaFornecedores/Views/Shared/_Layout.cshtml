@@ -44,6 +44,8 @@
                     </ul>
                     @if (user.Fulladm)
                     {
+                        <button style="margin-right:1%;" class=" btn btn-outline-secundary btn-light"><a class="nav-link text-dark" type="submit" asp-controller="Home" asp-action="EnviarNota">Enviar nota</a></button>
+
                         <button style="margin-right:1%;" class=" btn btn-outline-secundary btn-light"><a class="nav-link text-dark" type="submit" asp-controller="Home" asp-action="AdicionarGrupoAcesso"> Adicionar grupo de acesso</a></button>
                     }
 
@@ -67,7 +69,7 @@
 
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

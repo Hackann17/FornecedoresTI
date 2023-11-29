@@ -6,11 +6,25 @@
 // funcoes para modelar mascara de cnpj
 
 function ConfirmacaoCadastro() {
-    var cnpjInput = document.getElementById('CNPJ');
-    let contatoinput = document.getElementById('contato');
-    //cnpjInput.value = formatarCNPJ(cnpjInput.value);
-    alert("macaco loko" + cnpjInput.value + contatoinput.value)
 
+    nomeU = document.getElementsByName("nome")[0]
+    cnpjU = document.getElementsByName("cnpj")[0]
+    contatoU = document.getElementsByName("contato")[0]
+    emailU = document.getElementsByName("email")[0]
+
+    //tratando cnpj
+    if (/[a-zA-Z]/.test(cnpjU.value) || cnpjU.value.length < 14) {
+        cnpjU.classList.add("bordavermelha")
+        alert("O" + cnpjU.value + " CNPJ não atente aos requisistos do cadastro")
+        return false
+    }
+
+    //tratando contato
+    if (/[a-zA-Z]/.test(contatoU.value) || contatoU.value.length < 9) {
+        contatoU.classList.add("bordavermelha")
+        alert("O contato não atende aos requisitos do  cadastro")
+        return false
+    }
     return confirm("Os dados estao corretos? Deseja mesmo fazer o cadastro? ")
 
 }

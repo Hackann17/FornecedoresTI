@@ -2,8 +2,7 @@
 using System.Data.SqlClient;
 using System.Net.Mail;
 using System.Net;
-using System.Runtime.Intrinsics.X86;
-using Newtonsoft.Json;
+using Humanizer;
 
 namespace AgendaFornecedores.Models
 {
@@ -121,97 +120,74 @@ namespace AgendaFornecedores.Models
 
         }
 
-        public void AnaliseVencFatura(List<Fornecedor> fornecedores)
-        { 
+        public void AnaliseVencFatura(List<Fornecedor> fornecedores, Usuario us)
+        {
             DateOnly hoje = DateOnly.FromDateTime(DateTime.Now);
             foreach (var fornecedor in fornecedores)
             {
-                // verificar se a data estiver ha  duas semanas de vencer
-
+                // verificar se a data estiver ha uma semana de vencer
                 if (fornecedor.VencimentoFatura.Month == hoje.Month)
                 {
                     if (fornecedor.VencimentoFatura.Day - hoje.Day <= 7)
                     {
-                        if (CriaEnviaEmail(fornecedor))
+                        if (CriaEnviaEmail(fornecedor,us))
                         {
                             //atualizar no banco de dados
                             AtualizaVencimentoFatura(fornecedor);
                         }
                     }
-                }
+                }  
             }
         }
 
-        private static bool CriaEnviaEmail(Fornecedor fornecedor)
+        private static bool CriaEnviaEmail(Fornecedor fornecedor, Usuario us)
         {
-            //Instancia o Objeto Email como MailMessage 
-            MailMessage Email = new MailMessage();
-
-            //Atribui ao método From o valor do Remetente 
-            Email.From = new MailAddress("TI@bsstex.com.br");
-
-            // Atribui o destinatário
-            Email.To.Add(new MailAddress("pedro.godinho@bsstex.com.br"));
-
-            // Adiciona um com cópia oculta
-            Email.Bcc.Add(new MailAddress("email3@dominio"));
-
-            //Atribui ao método Subject o assunto da mensagem 
-            Email.Subject = $"Fatura vencimento {fornecedor.VencimentoFatura}";
-
-            // Define o formato da mensagem (Texto ou Html)
-            Email.IsBodyHtml = false; // Defina como true se for HTML
-
-            //Atribui ao método Body a texto da mensagem 
-            Email.Body = $"A fatura do fornecedor{fornecedor.Nome} vencerá semana que vem preste atenção";
-
-            // Configura as credenciais do servidor SMTP (caso necessário)
-            NetworkCredential credenciais = new NetworkCredential("pedro.godinho", "Bsspgodinho1#a"); // Preencha com suas credenciais se necessário
-
-            // Configura o cliente SMTP
-            SmtpClient client = new SmtpClient
+            // Set your SMTP server and credentials
+            SmtpClient smtpClient = new("email-ssl.com.br")
             {
-                Host = "email - ssl.com.br",
-                Port =  465, // Porta padrão para SMTP
-                EnableSsl = true, // Se o servidor utiliza SSL
-                Credentials = credenciais, // Atribui as credenciais aqui
-                DeliveryMethod = SmtpDeliveryMethod.Network // Método de entrega
+                Port = 587, // Porta SMTP para ssl
+                Credentials = new NetworkCredential("pedro.godinho@bsstex.com.br","Bsspgodinho1#e"),
+                EnableSsl = true, // Necessário para locaweb SSL/TLS
+            };
+
+            // Create and configure the email message
+            MailMessage mailMessage = new MailMessage($"pedro.godinho@bsstex.com.br", $"{us.NomeUsuario}@bsstex.com.br",
+                $"Fatura vencimento {fornecedor.VencimentoFatura}", $"A fatura do fornecedor {fornecedor.Nome} já venceu ou vencerá na semana que vem no dia {fornecedor.VencimentoFatura}," +
+                $" preste atenção. A próxima data de pagamento referente ao fornecedor já foi atribuida ao sistema.")
+            {
+                IsBodyHtml = false // Set to true if the body contains HTML content
             };
 
             try
-            {
-                // Enviar o e-mail
+           {
                 //Envia a mensagem baseado nos dados do objeto Email 
-                client.Send(Email);
+                smtpClient.Send(mailMessage);
                 return true;
-             
-            }
-            catch(Exception ex) 
-            {
-                return false;
-            }
-            finally
-            {
+
+           }
+           catch(Exception ex) 
+           {
+               return false;
+           }
+           finally
+           {
                 // Libera os recursos
-                Email.Dispose();
-            }
+                mailMessage.Dispose();
+           }
         }
 
         private static void AtualizaVencimentoFatura(Fornecedor forn)
         {
             //após o email ser enviado o sistema atualiza o banco de dados
-
             SqlConnection con = new SqlConnection(SQL.SConexao());
             try
             {
                 con.Open();
-
-                string inserir = $"update * from fornecedores set vencimento_fatura = DATEADD(day, 30,vencimento_fatura )" +
-                    $"  where vencimento_fatura = {forn.VencimentoFatura}";
-                SqlCommand sqlCommand = new SqlCommand();
+                string inserir = $"UPDATE fornecedores SET vencimento_fatura = DATEADD(day, 30, vencimento_fatura) where id = {forn.Id};" ;
+                SqlCommand sqlCommand = new SqlCommand(inserir,con);
                 sqlCommand.ExecuteNonQuery();
             }
-
+            catch(Exception ex){}
             finally { con.Close(); }
         }
 
@@ -227,7 +203,6 @@ namespace AgendaFornecedores.Models
 
                 if (mySqlCommand.ExecuteNonQuery() != null) return true;
                 return false;
-
             }
             catch
             { return false; }
@@ -236,7 +211,6 @@ namespace AgendaFornecedores.Models
                 con.Close();
             }
         }
-
         internal bool AlterarFornecedor(Fornecedor fornecedor)
         {
             //"UPDATE Tabela SET Propriedade1 = @Valor1, Propriedade2 = @Valor2 WHERE ID = @ID"
@@ -257,5 +231,3 @@ namespace AgendaFornecedores.Models
         }
     }
 }
-
-
