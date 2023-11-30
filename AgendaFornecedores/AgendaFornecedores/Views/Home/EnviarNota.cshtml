@@ -6,30 +6,21 @@
 }
 <section class="row">
 
-    <h1>Ola </h1>
+    <h1 class="text-center display-4">Envio de notas </h1>
 
     <div class="col"></div>
     <div class="container col">
-        <form>
-            <div class="form-group">
-                <label for="para">Email remetente </label>
-                <input type="text" class="form-control" />
-            </div>
-  
+        <form asp-controller="Fornecedor" asp-action="EnviarNota">
+            
             <div class="form-group">
                 <label>Email destinatario</label>
-                <input type ="text" class="form-control">
+                <input type ="text" class="form-control" name="destinatário">
             </div>
-
-            <div class="form-group">
-                <label>Endereço do arquivo</label>
-                <input type="text" class="form-control" />
-            </div>
-
 
             <div class="form-group">
                 <label>Mensagem</label>
-                <input type="text" class="form-control" />
+                <textarea name="mensagem" class="form-control" name="mensagem" cols="25" rows="5" ></textarea>
+
             </div>
             <button style="margin-top:1%;" class="btn btn-primary" type="submit">enviar</button>
 

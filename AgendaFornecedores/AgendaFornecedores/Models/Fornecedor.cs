@@ -2,7 +2,9 @@
 using System.Data.SqlClient;
 using System.Net.Mail;
 using System.Net;
-using Humanizer;
+using System;
+using System.IO;
+using System.Collections.Generic;
 
 namespace AgendaFornecedores.Models
 {
@@ -120,77 +122,6 @@ namespace AgendaFornecedores.Models
 
         }
 
-        public void AnaliseVencFatura(List<Fornecedor> fornecedores, Usuario us)
-        {
-            DateOnly hoje = DateOnly.FromDateTime(DateTime.Now);
-            foreach (var fornecedor in fornecedores)
-            {
-                // verificar se a data estiver ha uma semana de vencer
-                if (fornecedor.VencimentoFatura.Month == hoje.Month)
-                {
-                    if (fornecedor.VencimentoFatura.Day - hoje.Day <= 7)
-                    {
-                        if (CriaEnviaEmail(fornecedor,us))
-                        {
-                            //atualizar no banco de dados
-                            AtualizaVencimentoFatura(fornecedor);
-                        }
-                    }
-                }  
-            }
-        }
-
-        private static bool CriaEnviaEmail(Fornecedor fornecedor, Usuario us)
-        {
-            // Set your SMTP server and credentials
-            SmtpClient smtpClient = new("email-ssl.com.br")
-            {
-                Port = 587, // Porta SMTP para ssl
-                Credentials = new NetworkCredential("pedro.godinho@bsstex.com.br","Bsspgodinho1#e"),
-                EnableSsl = true, // Necessário para locaweb SSL/TLS
-            };
-
-            // Create and configure the email message
-            MailMessage mailMessage = new MailMessage($"pedro.godinho@bsstex.com.br", $"{us.NomeUsuario}@bsstex.com.br",
-                $"Fatura vencimento {fornecedor.VencimentoFatura}", $"A fatura do fornecedor {fornecedor.Nome} já venceu ou vencerá na semana que vem no dia {fornecedor.VencimentoFatura}," +
-                $" preste atenção. A próxima data de pagamento referente ao fornecedor já foi atribuida ao sistema.")
-            {
-                IsBodyHtml = false // Set to true if the body contains HTML content
-            };
-
-            try
-           {
-                //Envia a mensagem baseado nos dados do objeto Email 
-                smtpClient.Send(mailMessage);
-                return true;
-
-           }
-           catch(Exception ex) 
-           {
-               return false;
-           }
-           finally
-           {
-                // Libera os recursos
-                mailMessage.Dispose();
-           }
-        }
-
-        private static void AtualizaVencimentoFatura(Fornecedor forn)
-        {
-            //após o email ser enviado o sistema atualiza o banco de dados
-            SqlConnection con = new SqlConnection(SQL.SConexao());
-            try
-            {
-                con.Open();
-                string inserir = $"UPDATE fornecedores SET vencimento_fatura = DATEADD(day, 30, vencimento_fatura) where id = {forn.Id};" ;
-                SqlCommand sqlCommand = new SqlCommand(inserir,con);
-                sqlCommand.ExecuteNonQuery();
-            }
-            catch(Exception ex){}
-            finally { con.Close(); }
-        }
-
         public bool DeletarFornecedor(int id)
         {
             SqlConnection con = new(SQL.SConexao());
@@ -211,6 +142,7 @@ namespace AgendaFornecedores.Models
                 con.Close();
             }
         }
+
         internal bool AlterarFornecedor(Fornecedor fornecedor)
         {
             //"UPDATE Tabela SET Propriedade1 = @Valor1, Propriedade2 = @Valor2 WHERE ID = @ID"
@@ -228,6 +160,141 @@ namespace AgendaFornecedores.Models
             }
             catch { return false; }
             finally { con.Close(); }
+        }
+
+        public bool AnaliseVencFatura(List<Fornecedor> fornecedores, Usuario us)
+        {
+            DateOnly hoje = DateOnly.FromDateTime(DateTime.Now);
+            foreach (var fornecedor in fornecedores)
+            {
+                // verificar se a data estiver ha uma semana de vencer
+                if (fornecedor.VencimentoFatura.Month == hoje.Month)
+                {
+                    if (fornecedor.VencimentoFatura.Day - hoje.Day <= 7)
+                    {
+                        string assunto = $"Fatura vencimento {fornecedor.VencimentoFatura}";
+                        string mensagem = $"A fatura do fornecedor {fornecedor.Nome} já venceu ou vencerá no dia {fornecedor.VencimentoFatura}," +
+                                           $" preste atenção. A próxima data de pagamento referente ao fornecedor será atribuida ao sistema.";
+
+                        if (CriaEnviaEmail(us.NomeUsuario, assunto, mensagem, null))
+                        {
+                            //atualizar no banco de dados
+                            AtualizaVencimentoFatura(fornecedor);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static bool CriaEnviaEmail(string remetente, string assunto, string mensagem, List<string> arqs)
+        {
+            // Set your SMTP server and credentials
+            SmtpClient smtpClient = new("email-ssl.com.br")
+            {
+                Port = 587, // Porta SMTP para ssl
+                Credentials = new NetworkCredential("pedro.godinho@bsstex.com.br", "Bsspgodinho1#e"),
+                EnableSsl = true, // Necessário para locaweb SSL/TLS
+            };
+
+            if(arqs!= null)
+            {
+                
+
+            }
+            else
+            {
+                // Create and configure the email message
+                MailMessage mailMessage = new MailMessage($"pedro.godinho@bsstex.com.br", $"{remetente}@bsstex.com.br", assunto, mensagem)
+                {
+                    IsBodyHtml = false // Set to true if the body contains HTML content
+                };
+            }
+
+            // Create and configure the email message
+            MailMessage mailMessage = new MailMessage($"pedro.godinho@bsstex.com.br", $"{remetente}@bsstex.com.br", assunto, mensagem)
+            {
+                IsBodyHtml = false // Set to true if the body contains HTML content
+            };
+
+            try
+            {
+                //Envia a mensagem baseado nos dados do objeto Email 
+                smtpClient.Send(mailMessage);
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            finally
+            {
+                // Libera os recursos
+                mailMessage.Dispose();
+            }
+        }
+
+        private static void AtualizaVencimentoFatura(Fornecedor forn)
+        {
+            //após o email ser enviado o sistema atualiza o banco de dados
+            SqlConnection con = new SqlConnection(SQL.SConexao());
+            try
+            {
+                con.Open();
+                string inserir = $"UPDATE fornecedores SET vencimento_fatura = DATEADD(day, 30, vencimento_fatura) where id = {forn.Id};";
+                SqlCommand sqlCommand = new SqlCommand(inserir, con);
+                sqlCommand.ExecuteNonQuery();
+            }
+            catch (Exception ex) { }
+            finally { con.Close(); }
+        }
+
+        //o processo de enviar a nota por email sera dividido em 
+        
+        internal bool EnviarNota(string destinatário, string mensagem)
+        {
+            List<Fornecedor> fornecedores = Fornecedor.listarFornecedores();
+
+            //verificação no diretorio , se existem os arquivos de comprovante para cada fornecedor
+            List<string> notas = SelecionaNotas(fornecedores);
+            if (notas != null)
+            {
+                //modelagem e envio de email
+                if (CriaEnviaEmail(destinatário, "Notas dos fornecedores", mensagem, notas))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private List<string> SelecionaNotas(List<Fornecedor> fornecedores)
+        {
+            List<string> caminhosNotas = null;
+
+            foreach (Fornecedor forn in fornecedores)
+            {
+                // Lista para armazenar os nomes das pastas
+                string[] pastas = { "JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ" };
+                DateTime hoje = DateTime.Now;
+
+                //Z:\Fornecedores\MicroData\2023\DEZ
+                // testes=> C:\Users\pedro.godinho\Documents\Pedro\Algar\Faturas\2023
+                //necessariao padronizar a organização das pastas no diretorio
+                string diretorio = $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{forn.Nome}\\Faturas\\{hoje.Year}\\{pastas[hoje.Month - 1]}";
+
+                if (Directory.Exists(diretorio))
+                {
+                    caminhosNotas = new List<string>();
+                    // Obtém todos os arquivos no diretório
+                    string[] arquivos = Directory.GetFiles(diretorio);
+                    caminhosNotas.AddRange(arquivos);
+                }
+            }
+
+            return caminhosNotas;
         }
     }
 }

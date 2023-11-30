@@ -74,8 +74,26 @@ namespace AgendaFornecedores.Controllers
             Usuario us = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("usuario"));
             Fornecedor forn = new Fornecedor();
 
-            forn.AnaliseVencFatura(fornes, us);
-            TempData["Verifica faturas"] = true;
+           if(forn.AnaliseVencFatura(fornes, us))
+            {
+                TempData["AnaliseVencFatura"] = "Email de analise enviado com sucesso.";
+                return RedirectToAction("Index", "Home");
+
+            }
+            TempData["AnaliseVencFatura"] = "E-mail não enviado.";
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        public IActionResult EnviarNota( string destinatário, string mensagem) 
+        {
+            Fornecedor forn = new Fornecedor();
+
+            bool a = forn.EnviarNota(destinatário, mensagem);
+
+
+
+
 
             return RedirectToAction("Index", "Home");
         }

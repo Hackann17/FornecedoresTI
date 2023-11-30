@@ -30,92 +30,91 @@
     </section>
 
 }
-else {
-    Usuario user = new Usuario("", "","GG_TI", true, true);
+else
+{
+        Usuario user = new Usuario("", "","GG_TI", true, true);
 
-    if (Context.Session.GetString("usuario") != null)
-    {
-        user = JsonConvert.DeserializeObject<Usuario>(Context.Session.GetString("usuario"));
-    }
-    <section class="text-center">
+        if (Context.Session.GetString("usuario") != null)
+        {
+            user = JsonConvert.DeserializeObject<Usuario>(Context.Session.GetString("usuario"));
+        }
+        <section class="text-center">
 
-        <h1 class="display-4">Agenda de fornecedores</h1>
+            <h1 class="display-4">Agenda de fornecedores</h1>
 
-        <ul>
-            <li style="margin-bottom:1%; background-color:rgb(128, 133, 140); color:white;" class="row">
-                <h5 class="col">Nome</h5>
-                <h5 class="col">CNPJ</h5>
-                <h5 class="col"> e-mail</h5>
-                <h5 class="col"> Contato</h5>
-                <h5 class="col">Vencimento de fatura</h5>
-                <h5 class="col"> Anotações</h5>
+            <ul>
+                <li style="margin-bottom:1%; background-color:rgb(128, 133, 140); color:white;" class="row">
+                    <h5 class="col">Nome</h5>
+                    <h5 class="col">CNPJ</h5>
+                    <h5 class="col"> e-mail</h5>
+                    <h5 class="col"> Contato</h5>
+                    <h5 class="col">Vencimento de fatura</h5>
+                    <h5 class="col"> Anotações</h5>
                 
 
-                @if(user.Midadm){
-                    <div class="col"></div>
-                    <div class="col"></div>
+                    @if(user.Midadm){
+                        <div class="col"></div>
+                        <div class="col"></div>
+                    }
+                
+                </li>
+                @{
+                    List<Fornecedor> forners = new List<Fornecedor>();
                 }
-                
-            </li>
-            @{
-                List<Fornecedor> forners = new List<Fornecedor>();
-            }
-            @foreach (Fornecedor fornecedor in Model)
-            {
-                forners.Add(fornecedor);
+                @foreach (Fornecedor fornecedor in Model)
+                {
+                    forners.Add(fornecedor);
 
-                DateOnly dvenc = fornecedor.VencimentoFatura;
+                    DateOnly dvenc = fornecedor.VencimentoFatura;
               
 
-                int hoje = DateTime.Now.Day;
+                    int hoje = DateTime.Now.Day;
 
-                <li class="row">
+                    <li class="row">
                   
-                    <p class="col text-start" value="@fornecedor.Nome">@fornecedor.Nome</p>
-                    <p class="col text-start" value="@fornecedor.Cnpj">@fornecedor.Cnpj</p>
-                    <p class="col text-start" value="@fornecedor.Email">@fornecedor.Email</p>
-                    <p class="col text-start" value="@fornecedor.Contato">@fornecedor.Contato</p>
+                        <p class="col text-start" value="@fornecedor.Nome">@fornecedor.Nome</p>
+                        <p class="col text-start" value="@fornecedor.Cnpj">@fornecedor.Cnpj</p>
+                        <p class="col text-start" value="@fornecedor.Email">@fornecedor.Email</p>
+                        <p class="col text-start" value="@fornecedor.Contato">@fornecedor.Contato</p>
 
-                    <p class="col text-start" value="@fornecedor.VencimentoFatura">@fornecedor.VencimentoFatura</p>
+                        <p class="col text-start" value="@fornecedor.VencimentoFatura">@fornecedor.VencimentoFatura</p>
 
-                    <p class="col text-start" value="@fornecedor.Anotacao">@fornecedor.Anotacao</p>
+                        <p class="col text-start" value="@fornecedor.Anotacao">@fornecedor.Anotacao</p>
 
-                    @if (user.Midadm)
-                    {
-                        string jfornecedor = JsonConvert.SerializeObject(fornecedor);
+                        @if (user.Midadm)
+                        {
+                            string jfornecedor = JsonConvert.SerializeObject(fornecedor);
 
-                        <form class="col btn" onsubmit="return Alterar()" asp-controller="Fornecedor" asp-action="redirecionarDados">
-                            <input value="@jfornecedor " hidden name="jfornecedor">
+                            <form class="col btn" onsubmit="return Alterar()" asp-controller="Fornecedor" asp-action="redirecionarDados">
+                                <input value="@jfornecedor " hidden name="jfornecedor">
 
-                            <button type="submit" class="col btn btn-outline-secundary btn-light">Alterar</button>
-                        </form>
+                                <button type="submit" class="col btn btn-outline-secundary btn-light">Alterar</button>
+                            </form>
 
-                        <form class="col btn" onsubmit="return Deletar()"asp-controller="Fornecedor" asp-action="Deletar">
-                        <!--asp-controller="Fornecedor" asp-action="DeletarFornecedor"-->
-                            <input value="@jfornecedor" hidden name="jfornecedor">
+                            <form class="col btn" onsubmit="return Deletar()"asp-controller="Fornecedor" asp-action="Deletar">
+                            <!--asp-controller="Fornecedor" asp-action="DeletarFornecedor"-->
+                                <input value="@jfornecedor" hidden name="jfornecedor">
 
-                        <button  type="submit" class="col btn btn-outline-secundary btn-light" > Deletar </button>
-                        </form>
-                    }
-                </li>                   
-             }
+                            <button  type="submit" class="col btn btn-outline-secundary btn-light" > Deletar </button>
+                            </form>
+                        }
+                    </li>                   
+                 }
                
-            </ul>
-        </section>
-    <p class="text-end" style="color:red;">@TempData["deletar"]</p>
+                </ul>
+            </section>
+        <p class="text-end" style="color:red;">@TempData["deletar"]</p>
 
-    <p></p>
-    <form  asp-controller="Fornecedor" asp-action="AnaliseVencFatura">
-        <input value="@JsonConvert.SerializeObject(forners)" name="forns" hidden>
+        <p></p>
+        <form  asp-controller="Fornecedor" asp-action="AnaliseVencFatura">
+            <input value="@JsonConvert.SerializeObject(forners)" name="forns" hidden>
 
-        <button type="submit">Analisar faturas </button>
-
-    </form>
-    }
-
+            <button type="submit">Analisar faturas </button>
+        </form>
+    <p>@TempData["AnaliseVencFatura"]</p>
 
 
+}
 <script type="text/javascript" src="~/site.js"></script>
 
     <!--<p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>-->
-
