@@ -5,6 +5,7 @@ using System.Net;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Net.Mime;
 
 namespace AgendaFornecedores.Models
 {
@@ -176,7 +177,7 @@ namespace AgendaFornecedores.Models
                         string mensagem = $"A fatura do fornecedor {fornecedor.Nome} já venceu ou vencerá no dia {fornecedor.VencimentoFatura}," +
                                            $" preste atenção. A próxima data de pagamento referente ao fornecedor será atribuida ao sistema.";
 
-                        if (CriaEnviaEmail(us.NomeUsuario, assunto, mensagem, null))
+                        if (CriaEnviaEmail($"{us.NomeUsuario}@bsstex.com.br", assunto, mensagem, null))
                         {
                             //atualizar no banco de dados
                             AtualizaVencimentoFatura(fornecedor);
@@ -188,9 +189,10 @@ namespace AgendaFornecedores.Models
             return false;
         }
 
-        private static bool CriaEnviaEmail(string remetente, string assunto, string mensagem, List<string> arqs)
+        private static bool CriaEnviaEmail(string destinatario, string assunto, string mensagem, List<string> arqs)
         {
             // Set your SMTP server and credentials
+            //o email do remetente é fixo
             SmtpClient smtpClient = new("email-ssl.com.br")
             {
                 Port = 587, // Porta SMTP para ssl
@@ -198,32 +200,37 @@ namespace AgendaFornecedores.Models
                 EnableSsl = true, // Necessário para locaweb SSL/TLS
             };
 
-            if(arqs!= null)
-            {
-                
+            //fazemos a verificação caso haja uma lista de arquivos a serem enviados
+            MailMessage mailMessage = new MailMessage();
 
+            if (arqs!= null)
+            {
+                // Create and configure the email message
+                // o destinatario é um usuario externo
+                mailMessage = new MailMessage($"pedro.godinho@bsstex.com.br",destinatario, assunto, mensagem)
+                {
+                    IsBodyHtml = false // Set to true if the body contains HTML content
+                };
+
+                foreach (string arq in arqs)
+                {
+                    Attachment anexo = new Attachment(arq, MediaTypeNames.Text.Plain);
+                    mailMessage.Attachments.Add(anexo);
+                }
             }
             else
             {
-                // Create and configure the email message
-                MailMessage mailMessage = new MailMessage($"pedro.godinho@bsstex.com.br", $"{remetente}@bsstex.com.br", assunto, mensagem)
+                mailMessage = new MailMessage($"pedro.godinho@bsstex.com.br",destinatario, assunto, mensagem)
                 {
                     IsBodyHtml = false // Set to true if the body contains HTML content
                 };
             }
-
-            // Create and configure the email message
-            MailMessage mailMessage = new MailMessage($"pedro.godinho@bsstex.com.br", $"{remetente}@bsstex.com.br", assunto, mensagem)
-            {
-                IsBodyHtml = false // Set to true if the body contains HTML content
-            };
 
             try
             {
                 //Envia a mensagem baseado nos dados do objeto Email 
                 smtpClient.Send(mailMessage);
                 return true;
-
             }
             catch (Exception ex)
             {
@@ -253,7 +260,7 @@ namespace AgendaFornecedores.Models
 
         //o processo de enviar a nota por email sera dividido em 
         
-        internal bool EnviarNota(string destinatário, string mensagem)
+        internal bool EnviarNota(string destinatario, string mensagem)
         {
             List<Fornecedor> fornecedores = Fornecedor.listarFornecedores();
 
@@ -262,7 +269,7 @@ namespace AgendaFornecedores.Models
             if (notas != null)
             {
                 //modelagem e envio de email
-                if (CriaEnviaEmail(destinatário, "Notas dos fornecedores", mensagem, notas))
+                if (CriaEnviaEmail(destinatario, "Notas dos fornecedores", mensagem, notas))
                 {
                     return true;
                 }
@@ -272,29 +279,89 @@ namespace AgendaFornecedores.Models
 
         private List<string> SelecionaNotas(List<Fornecedor> fornecedores)
         {
-            List<string> caminhosNotas = null;
+            List<string> caminhosNotas = new List<string>();
 
             foreach (Fornecedor forn in fornecedores)
             {
-                // Lista para armazenar os nomes das pastas
-                string[] pastas = { "JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ" };
                 DateTime hoje = DateTime.Now;
-
-                //Z:\Fornecedores\MicroData\2023\DEZ
                 // testes=> C:\Users\pedro.godinho\Documents\Pedro\Algar\Faturas\2023
-                //necessariao padronizar a organização das pastas no diretorio
-                string diretorio = $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{forn.Nome}\\Faturas\\{hoje.Year}\\{pastas[hoje.Month - 1]}";
+                // string dirFornecedor = $"Z:\\Fornecedores\\{hoje.Year}\\{forn.nome}\\Faturas\\{pastas[hoje.Month-1]}";
 
-                if (Directory.Exists(diretorio))
-                {
-                    caminhosNotas = new List<string>();
-                    // Obtém todos os arquivos no diretório
-                    string[] arquivos = Directory.GetFiles(diretorio);
-                    caminhosNotas.AddRange(arquivos);
-                }
+                string dirAno = $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{hoje.Year}";
+                caminhosNotas = verificaCriaDiretorio(forn, dirAno, hoje);
             }
 
             return caminhosNotas;
+        }
+
+        //verifica e modela um diretorio padrao
+        private List<string> verificaCriaDiretorio(Fornecedor forn, string dirAno, DateTime hoje)
+        {
+            // Lista para armazenar os nomes das pastas
+            string[] pastas = {"01_JAN", "02_FEV", "03_MAR", "04_ABR", "05_MAI", "06_JUN", "07_JUL", "08_AGO", "09_SET", "10_OUT", "11_NOV", "12_DEZ" };
+            List<string> dirNotas = new List<string>();
+
+
+            //faz uma verificação em cadeia sobre cada parte do diretorio
+            if (Directory.Exists(dirAno))
+            {
+                string dirForn = Path.Combine(dirAno, forn.Nome);
+
+                if (Directory.Exists(dirForn))
+                {
+                    string dirFaturas = Path.Combine(dirForn, "Faturas");
+                    if (Directory.Exists(dirFaturas))
+                    {
+                        string dirMes = Path.Combine(dirFaturas,pastas[hoje.Month - 1]);
+                        if (Directory.Exists(dirMes))
+                        {
+                            // Obtém todos os arquivos no diretório
+                            string[] arquivos = Directory.GetFiles(dirMes);
+                            dirNotas.AddRange(arquivos);
+                        }
+                        else
+                        {
+                            //cria as pastas dos meses
+                            for (int i = 0; i < pastas.Length; i++)
+                            {
+                                Directory.CreateDirectory(Path.Combine(dirFaturas, pastas[i]));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //cria as pastas da fatura em diante
+                        Directory.CreateDirectory(dirFaturas);
+                        for (int i = 0; i < pastas.Length; i++)
+                        {
+                            Directory.CreateDirectory(Path.Combine(dirFaturas, pastas[i]));
+                        }
+                    }
+                }
+                else
+                {
+                    //cria diretorio do fornecedor em diante
+                    dirForn = Path.Combine(dirForn,"Faturas");
+                    Directory.CreateDirectory(dirForn);
+                    for (int i = 0; i < pastas.Length; i++)
+                    {
+                        Directory.CreateDirectory(Path.Combine(dirForn, pastas[i]));
+                    }
+                }
+            }
+            else
+            {
+                //cria diretorio do ano em diante
+                string diretorio = Path.Combine(dirAno, forn.Nome, "Faturas");
+                Directory.CreateDirectory(diretorio);
+                for (int i = 0; i < pastas.Length; i++)
+                {
+                    Directory.CreateDirectory(Path.Combine(diretorio, pastas[i]));
+                }
+
+            }
+
+            return dirNotas;
         }
     }
 }

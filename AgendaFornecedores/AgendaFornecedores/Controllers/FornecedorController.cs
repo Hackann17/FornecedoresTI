@@ -85,15 +85,14 @@ namespace AgendaFornecedores.Controllers
         }
 
 
-        public IActionResult EnviarNota( string destinatário, string mensagem) 
+        public IActionResult EnviarNota( string destinatario, string mensagem) 
         {
             Fornecedor forn = new Fornecedor();
 
-            bool a = forn.EnviarNota(destinatário, mensagem);
-
-
-
-
+            if(forn.EnviarNota(destinatario, mensagem))
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             return RedirectToAction("Index", "Home");
         }

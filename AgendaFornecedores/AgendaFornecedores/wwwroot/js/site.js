@@ -25,15 +25,17 @@ function ConfirmacaoCadastro() {
         alert("O contato não atende aos requisitos do  cadastro")
         return false
     }
-    return confirm("Os dados estao corretos? Deseja mesmo fazer o cadastro? ")
 
+    return VerificaEmail(emailU.value)
+
+
+
+    return confirm("Os dados estao corretos? Deseja mesmo fazer o cadastro? ")
 }
 
 function Deletar() {
     return confirm("Tem certeza de que deseja deletar esse fornecedor da lista?")
 }
-
-
 
 function adicionarGrupo() {
     return confirm("Tem certeza de qua deseja adicionar esse grupo aos administradores?")
@@ -44,5 +46,22 @@ function validarAlterar() {
     //let nF = input[0].value
     // nF += "adfasadf"
     return confirm("Deseja realizar essas alterações no fornecedor ??")
+}
 
+function VerificaDestinatario() {
+    email = document.getElementsByName("destinatario")[0]
+    return VerificaEmail(email.value)
+}
+
+
+
+function VerificaEmail(email) {
+
+    if (email.includes("@") && email.includes(".com") || email.includes(".com.br")) {
+        return true;
+    }
+    else {
+        alert("O email não segue os padrões para o envio")
+        return false;
+    }    
 }

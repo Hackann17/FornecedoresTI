@@ -10,11 +10,11 @@
 
     <div class="col"></div>
     <div class="container col">
-        <form asp-controller="Fornecedor" asp-action="EnviarNota">
+        <form onsubmit="return VerificaDestinatario()" asp-controller="Fornecedor" asp-action="EnviarNota">
             
             <div class="form-group">
                 <label>Email destinatario</label>
-                <input type ="text" class="form-control" name="destinatário">
+                <input type="text" class="form-control" name="destinatario">
             </div>
 
             <div class="form-group">
