@@ -18,7 +18,6 @@ namespace AgendaFornecedores.Controllers
             if (HttpContext.Session.GetString("usuario") != null)
             {
                     List<Fornecedor> fornecedores = Fornecedor.listarFornecedores();
-
                     TempData["fornecedores"] = fornecedores;
                     return View(TempData["fornecedores"]);
             }

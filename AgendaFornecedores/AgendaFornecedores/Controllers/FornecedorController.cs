@@ -91,10 +91,12 @@ namespace AgendaFornecedores.Controllers
 
             if(forn.EnviarNota(destinatario, mensagem))
             {
-                return RedirectToAction("Index", "Home");
+                TempData["EnvioDeNotas"] = "As notas foram enviadas com sucesso !";
+                return RedirectToAction("EnviarNota", "Home");
             }
 
-            return RedirectToAction("Index", "Home");
+            TempData["EnvioDeNotas"] = "Não foi possivel enviar as notas!";
+            return RedirectToAction("EnviarNota", "Home");
         }
     }
 }
