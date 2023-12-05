@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Asn1.X509;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace AgendaFornecedores.Models
 {
@@ -31,6 +32,7 @@ namespace AgendaFornecedores.Models
 
         public string NomeFornecedor { get => nomeFornecedor; set => nomeFornecedor = value; }
         public int Id { get => id; set => id = value; }
+
         public  bool AdiconarAcao( Acao action)
         {
             SqlConnection con = new (SQL.SConexao());
@@ -87,6 +89,27 @@ namespace AgendaFornecedores.Models
             catch { return acoes; }
 
             finally { con.Close(); }
+        }
+
+        public List<string> VerificaAcaoEnvio(List<Fornecedor> fornecedores)
+        {
+            List<Acao> acoes = listarAcoes();
+            List<string> nomesfornecedores = new List<string>();
+
+            foreach (Fornecedor fornecedor in fornecedores)
+            {
+                for (int i = 0; i < acoes.Count; i++)
+                {
+                    if (!(acoes[i].Action == "EnviarNota") || (acoes[i].Action == "EnviarNota" && !(acoes[i].Data.Month <= DateTime.Now.Month)))
+                    {
+                        if (!nomesfornecedores.Contains(acoes[i].NomeFornecedor) && acoes[i].NomeFornecedor == fornecedor.Nome)
+                        {
+                            nomesfornecedores.Add(fornecedor.Nome);
+                        }
+                    } 
+                }    
+            }
+            return nomesfornecedores;
         }
     }
 }

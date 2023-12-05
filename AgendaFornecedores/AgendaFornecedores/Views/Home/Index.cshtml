@@ -111,7 +111,17 @@ else
 
             <button type="submit">Analisar faturas </button>
         </form>
+
+    <form asp-controller="Fornecedor" asp-action="CriaPastas">
+
+            <input value="@JsonConvert.SerializeObject(forners)" name="forns" hidden>
+
+            <button type="submit">Criar pasta para fornecedores </button>
+
+        </form>
+
     <p>@TempData["AnaliseVencFatura"]</p>
+    <p>@TempData["VerificaCriaDiretorio"]</p>
 
 
 }

@@ -1,5 +1,6 @@
 ﻿using AgendaFornecedores.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.ObjectModelRemoting;
 using Newtonsoft.Json;
 using System.Collections.Specialized;
 
@@ -22,6 +23,25 @@ namespace AgendaFornecedores.Controllers
             return RedirectToAction("RedirecionarTela", "Acao");
         }
 
+        public IActionResult RegistrarAcaoNota(List<string> fornecedores, string usuario)
+        {
+            Usuario u = JsonConvert.DeserializeObject<Usuario>(usuario);
+
+            for( int i = 0; i < fornecedores.Count; i++)
+            {
+                Acao ac = new Acao(0, u.NomeUsuario, "EnviarNota", DateTime.Now, fornecedores[i]);
+
+               if(!ac.AdiconarAcao(ac))
+                {
+                    break;
+                }
+            }
+
+            string aacao = "EnviarNota";
+            return RedirectToAction("RedirecionarTela", "Acao", new {aacao});
+
+        }
+
         public IActionResult RedirecionarTela(string aacao)
         {
             //fazer cadeia de condições para conferir qual tela será a proxima a ser exibida
@@ -31,6 +51,8 @@ namespace AgendaFornecedores.Controllers
             if (aacao == "deletar") return RedirectToAction("Index", "Home");
 
             if (aacao == "alterar") return RedirectToAction("Index", "Home");
+
+            if (aacao == "EnviarNota") return RedirectToAction("EnviarNota", "Home");
 
             return RedirectToAction("Index", "Home");
         }

@@ -29,8 +29,10 @@ namespace AgendaFornecedores.Controllers
         public IActionResult Deletar(string jfornecedor)
         {
             Fornecedor fornecedor = JsonConvert.DeserializeObject<Fornecedor>(jfornecedor);
-            if (fornecedor.DeletarFornecedor(fornecedor.Id))
+            if (fornecedor.DeletarFornecedor(fornecedor))
             {
+                Fornecedor f = new Fornecedor();
+
                 Usuario us = JsonConvert.DeserializeObject<Usuario>(HttpContext.Session.GetString("usuario"));
                 DateTime dataHoraAtual = DateTime.Now;
 
@@ -77,10 +79,12 @@ namespace AgendaFornecedores.Controllers
            if(forn.AnaliseVencFatura(fornes, us))
             {
                 TempData["AnaliseVencFatura"] = "Email de analise enviado com sucesso.";
-                return RedirectToAction("Index", "Home");
 
             }
-            TempData["AnaliseVencFatura"] = "E-mail não enviado.";
+            else
+            {
+                TempData["AnaliseVencFatura"] = "E-mail não enviado.";
+            }
             return RedirectToAction("Index", "Home");
         }
 
@@ -88,16 +92,42 @@ namespace AgendaFornecedores.Controllers
         public IActionResult EnviarNota( string destinatario, string mensagem) 
         {
             Fornecedor forn = new Fornecedor();
-
-            if(forn.EnviarNota(destinatario, mensagem))
+            List<string> fornecedors = forn.EnviarNota(destinatario, mensagem);
+            if (!(fornecedors  == null || forn.EnviarNota(destinatario, mensagem).Count <= 0))
             {
-                TempData["EnvioDeNotas"] = "As notas foram enviadas com sucesso !";
-                return RedirectToAction("EnviarNota", "Home");
-            }
 
-            TempData["EnvioDeNotas"] = "Não foi possivel enviar as notas!";
+                string usuario = HttpContext.Session.GetString("usuario");
+                string fornecedores = JsonConvert.SerializeObject(fornecedors);
+                RedirectToAction("RegistrarAcao", "Acao", new { fornecedores, usuario });
+
+                TempData["EnvioDeNotas"] = "As notas foram enviadas com sucesso !";
+
+                return RedirectToAction("EnviarNota", "Home");
+
+            }
+            else
+            {
+                TempData["EnvioDeNotas"] = "Não foi possivel enviar as notas!";
+            }
             return RedirectToAction("EnviarNota", "Home");
         }
+        
+
+        public IActionResult CriaPastas(string forns)
+        {
+            List<Fornecedor> fornecedores = JsonConvert.DeserializeObject<List<Fornecedor>>(forns);
+            Fornecedor fornecedor1 = new Fornecedor();
+
+            if (fornecedor1.CriaPastas(fornecedores))
+            {
+                TempData["VerificaCriaDiretorio"] = "Pastas criadas no diretorio";   
+            }
+            else{
+                TempData["VerificaCriaDiretorio"] = "Não foi possivel criar as Pastas";
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
     }
 }
 

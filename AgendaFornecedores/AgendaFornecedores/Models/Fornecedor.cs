@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Net.Mime;
+using AgendaFornecedores.Views.Home;
 
 namespace AgendaFornecedores.Models
 {
@@ -123,17 +124,19 @@ namespace AgendaFornecedores.Models
 
         }
 
-        public bool DeletarFornecedor(int id)
+        public bool DeletarFornecedor(Fornecedor fornecedor)
         {
             SqlConnection con = new(SQL.SConexao());
-
             try
             {
                 con.Open();
-                string delete = $"DELETE FROM fornecedores WHERE id = {id}";
+                string delete = $"DELETE FROM fornecedores WHERE id = {fornecedor.Id}";
                 SqlCommand mySqlCommand = new SqlCommand(delete, con);
 
-                if (mySqlCommand.ExecuteNonQuery() != null) return true;
+                if (mySqlCommand.ExecuteNonQuery() != null)
+                {
+                    return true;
+                }
                 return false;
             }
             catch
@@ -253,13 +256,16 @@ namespace AgendaFornecedores.Models
             }
             catch (Exception ex) { }
             finally { con.Close(); }
-        }
+        }        
 
-        //o processo de enviar a nota por email sera dividido em 
-        
-        internal bool EnviarNota(string destinatario, string mensagem)
+        internal List<string> EnviarNota(string destinatario, string mensagem)
         {
-            List<Fornecedor> fornecedores = Fornecedor.listarFornecedores();
+            Acao acao = new Acao();
+
+            List<string> fornecedores;
+            fornecedores = acao.VerificaAcaoEnvio(listarFornecedores());
+
+            if(fornecedores.Count <= 0 )return fornecedores;
 
             //verificação no diretorio , se existem os arquivos de comprovante para cada fornecedor
             try
@@ -270,47 +276,62 @@ namespace AgendaFornecedores.Models
                     //modelagem e envio de email
                     if (CriaEnviaEmail(destinatario, "Notas dos fornecedores", mensagem, notas))
                     {
-                        return true;
+                        return fornecedores;
                     }
                 }
-                return false;
+                return fornecedores;
             }
-            catch(Exception ex) { return false; }
+            catch(Exception ex) { return fornecedores; }
         }
 
-        private List<string> SelecionaNotas(List<Fornecedor> fornecedores)
+        // nesse metodo verificamos se ja enviamos as notas de cada fornecedor para dai sim verificar
+        // o diretorio e enviar as notas
+        private List<string> SelecionaNotas(List<string> fornecedores)
         {
             //lista todas as notas de todos os fornecedores
             List<string>? caminhosNotas = new List<string> ();
             DateTime hoje = DateTime.Now;
-
-            foreach (Fornecedor forn in fornecedores)
+            try
             {
-                // modelo padrao diretorio "ano/fornecedor/faturas/X_MES
-                try
+                foreach (string forn in fornecedores)
                 {
-                    string dirAno = $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{hoje.Year}";
+                    string diretorio = verificaCriaDiretorio(forn,hoje);
 
-                    List<string> auxiliar = verificaCriaDiretorio(forn, dirAno, hoje);
-                    for (int i = 0; i < auxiliar.Count; i++)
+                    if (diretorio != "")
                     {
-                        caminhosNotas.Add(auxiliar[i]);
-                    }
+                        string[] arquivos = Directory.GetFiles(diretorio);
+                        caminhosNotas.AddRange(arquivos);  
+                    }       
                 }
-                catch(Exception e ) { }
-               
             }
-            
+            catch (Exception e) { }
+
             return caminhosNotas;
         }
 
-        //verifica e modela um diretorio padrao
-        private List<string> verificaCriaDiretorio(Fornecedor fornecedor, string diretorioAno, DateTime hoje)
+
+        public bool CriaPastas(List<Fornecedor> fornecedores)
         {
+            DateTime hoje = DateTime.Now;
+            foreach(Fornecedor fornecedor in fornecedores)
+            {
+                if(verificaCriaDiretorio(fornecedor.nome, hoje) == "")
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //verifica e modela um diretorio padrao
+        private string verificaCriaDiretorio(String nomeFornecedor, DateTime hoje)
+        {
+            // modelo padrao diretorio "ano/fornecedor/faturas/X_MES               
+            string diretorioAno = $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{hoje.Year}";
+
             // Lista para armazenar os nomes das pastas
             string[] pastas = {"01_JAN", "02_FEV", "03_MAR", "04_ABR", "05_MAI", "06_JUN", "07_JUL", "08_AGO", "09_SET", "10_OUT", "11_NOV", "12_DEZ" };
-            List<string> dirNotas = new List<string>();
-
+            string diretorio = "";
             try
             {
                 // Função para criar diretório recursivamente
@@ -324,7 +345,7 @@ namespace AgendaFornecedores.Models
 
                 CriarDiretorioRecursivo(diretorioAno);
 
-                string dirFornecedor = Path.Combine(diretorioAno, fornecedor.Nome);
+                string dirFornecedor = Path.Combine(diretorioAno, nomeFornecedor);
                 CriarDiretorioRecursivo(dirFornecedor);
 
                 string dirFaturas = Path.Combine(dirFornecedor, "Faturas");
@@ -337,15 +358,15 @@ namespace AgendaFornecedores.Models
                     dirMes = Path.Combine(dirFaturas, pasta);
                     CriarDiretorioRecursivo(dirMes);
                 }
-                // Obtém todos os arquivos no diretório
-                dirMes = Path.Combine(dirFaturas, pastas[hoje.Month - 1]);
-                string[] arquivos = Directory.GetFiles(dirMes);
-                dirNotas.AddRange(arquivos);
-               
+                // Prepara odiretorio completo
+                diretorio = Path.Combine(dirFaturas, pastas[hoje.Month - 1]);
+
+                return diretorio;
+                              
             }
             catch (Exception ex) { }
 
-            return dirNotas;
+            return diretorio;
         }
     }
 }
