@@ -79,8 +79,6 @@ namespace AgendaFornecedores.Controllers
             return View();
         }
 
-
-
         public IActionResult Sair()
         {
             HttpContext.Session.Remove("usuario");

@@ -7,6 +7,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Net.Mime;
 using AgendaFornecedores.Views.Home;
+using MySqlConnector;
+using MySql.Data.MySqlClient;
 
 namespace AgendaFornecedores.Models
 {
@@ -54,11 +56,11 @@ namespace AgendaFornecedores.Models
                 List<string> colunas = new List<string> { "cnpj" };
                 List<string> parametros = new List<string> { fornecedor.Cnpj };
 
-                if (SQL.Procurar("fornecedores", colunas, parametros))
+                if (SQL.Procurar("nomesFornecedores", colunas, parametros))
                 {
                     con.Open();
 
-                    string insert = $"insert into fornecedores(id, nome, cnpj, contato, email, anotacao, grupo_trabalho, vencimento_fatura)" +
+                    string insert = $"insert into Fornecedores(id, nome, cnpj, contato, email, anotacao, grupo_trabalho, vencimento_fatura)" +
                     $"values(NEXT VALUE FOR fornecedores_seq,'{fornecedor.Nome}','{fornecedor.Cnpj}','{fornecedor.Contato}','{fornecedor.Email}','{fornecedor.Anotacao}','{fornecedor.Grupo_trabalho}','{fornecedor.VencimentoFatura.ToString("yyyy-MM-dd")}')";
 
                     SqlCommand mySqlCommand = new SqlCommand(insert, con);
@@ -91,7 +93,7 @@ namespace AgendaFornecedores.Models
 
                 //organizar lista de fornecedores pelo mais proximo do vencimento da fatura...
 
-                SqlCommand sqlCommand = new SqlCommand("select * from fornecedores", con);
+                SqlCommand sqlCommand = new SqlCommand("select * from Fornecedores", con);
                 SqlDataReader leitor = sqlCommand.ExecuteReader();
 
                 while (leitor.Read())
@@ -130,7 +132,7 @@ namespace AgendaFornecedores.Models
             try
             {
                 con.Open();
-                string delete = $"DELETE FROM fornecedores WHERE id = {fornecedor.Id}";
+                string delete = $"DELETE FROM nomesFornecedores WHERE id = {fornecedor.Id}";
                 SqlCommand mySqlCommand = new SqlCommand(delete, con);
 
                 if (mySqlCommand.ExecuteNonQuery() != null)
@@ -152,8 +154,13 @@ namespace AgendaFornecedores.Models
             SqlConnection con = new(SQL.SConexao());
             try
             {
+               Fornecedor forn = SelecionaFornecedor(fornecedor.Id);
+                //acessar o diretorio
+                //realizar a atualização
+                if(forn != null) AlteraDiretorio(forn,fornecedor.Nome);
+
                 con.Open();
-                string alterar = $"UPDATE fornecedores SET nome = '{fornecedor.Nome}', cnpj = '{fornecedor.Cnpj}'," +
+                string alterar = $"UPDATE Fornecedores SET nome = '{fornecedor.Nome}', cnpj = '{fornecedor.Cnpj}'," +
                     $" contato = '{fornecedor.Contato}', email = '{fornecedor.Email}', anotacao = '{fornecedor.Anotacao}'," +
                     $"vencimento_fatura = '{fornecedor.VencimentoFatura.ToString("yyyy/MM/dd")}' where id = {fornecedor.Id}";
                 SqlCommand mySql = new SqlCommand(alterar, con);
@@ -163,6 +170,49 @@ namespace AgendaFornecedores.Models
             }
             catch { return false; }
             finally { con.Close(); }
+        }
+
+        private void AlteraDiretorio(Fornecedor forn, string nome)
+        {
+            string diretorio = $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{DateTime.Now.Year}\\{forn.nome}";
+            if(Directory.Exists(diretorio))
+            {
+                string novoDiretorio = $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{DateTime.Now.Year}\\{nome}";
+                Directory.Move(diretorio,novoDiretorio);
+            }
+        }
+
+        private Fornecedor SelecionaFornecedor(int id)
+        {
+            SqlConnection con = new(SQL.SConexao());
+            //selecionar o objeto antigo do banco de dados
+            string select = $"SELECT * FROM Fornecedores where id = {id}";
+            try
+            {
+                con.Open();
+                SqlCommand mySelect = new SqlCommand(select, con);
+
+                SqlDataReader leitor = mySelect.ExecuteReader();
+
+                while (leitor.Read())
+                {
+                    int Id = int.Parse(leitor["id"].ToString());
+                    string nome = leitor["nome"].ToString();
+                    string cnpj = leitor["cnpj"].ToString();
+                    string contato = leitor["contato"].ToString();
+                    string email = leitor["email"].ToString();
+                    string anotacao = leitor["anotacao"].ToString();
+                    string grupoTrab = leitor["grupo_trabalho"].ToString();
+
+                    //o ParseExact gera um objeto datetime modelave, sigando o contexto da aplicação e algumas diretrizes
+                    DateOnly vencimento = DateOnly.ParseExact(leitor["vencimento_fatura"].ToString(), "dd/MM/yyyy 00:00:00", null);
+
+                    return new(Id, nome, cnpj, contato, email, anotacao, grupoTrab, vencimento);
+                }
+            }
+            catch (Exception ex) { return null; }
+            finally { con.Close(); }
+            throw new NotImplementedException();
         }
 
         public bool AnaliseVencFatura(List<Fornecedor> fornecedores, Usuario us)
@@ -250,7 +300,7 @@ namespace AgendaFornecedores.Models
             try
             {
                 con.Open();
-                string inserir = $"UPDATE fornecedores SET vencimento_fatura = DATEADD(day, 30, vencimento_fatura) where id = {forn.Id};";
+                string inserir = $"UPDATE nomesFornecedores SET vencimento_fatura = DATEADD(day, 30, vencimento_fatura) where id = {forn.Id};";
                 SqlCommand sqlCommand = new SqlCommand(inserir, con);
                 sqlCommand.ExecuteNonQuery();
             }
@@ -262,26 +312,52 @@ namespace AgendaFornecedores.Models
         {
             Acao acao = new Acao();
 
-            List<string> fornecedores;
-            fornecedores = acao.VerificaAcaoEnvio(listarFornecedores());
+            List<string> nomesFornecedores;
+            List<Fornecedor> fornecedeores = listarFornecedores();
+            nomesFornecedores = acao.VerificaAcaoEnvio(fornecedeores);
 
-            if(fornecedores.Count <= 0 )return fornecedores;
+            if(nomesFornecedores.Count <= 0 )return nomesFornecedores;
 
-            //verificação no diretorio , se existem os arquivos de comprovante para cada fornecedor
+            //verificação no diretorio , se existem os arquivos de faturas para cada fornecedor
+            //gerar metodo que confere os fornecedores que tieveram suas notas enviadas
             try
             {
-                List<string> notas = SelecionaNotas(fornecedores);
+                List<string> notas = SelecionaNotas(nomesFornecedores);
                 if ( notas.Count > 0)
                 {
+                    nomesFornecedores = SeparaFornecedores(notas,nomesFornecedores);
                     //modelagem e envio de email
-                    if (CriaEnviaEmail(destinatario, "Notas dos fornecedores", mensagem, notas))
+                    if (CriaEnviaEmail(destinatario, "Notas dos Fornecedores", mensagem, notas))
                     {
-                        return fornecedores;
+                        return nomesFornecedores;
                     }
                 }
-                return fornecedores;
+                else 
+                {
+                    //como as notas não foram enviadas limpamos a lista
+                    nomesFornecedores.Clear();
+                    return nomesFornecedores;
+                }
+                //como as notas não foram enviadas limpamos a lista
+                nomesFornecedores.Clear();
+                return nomesFornecedores;
+
             }
-            catch(Exception ex) { return fornecedores; }
+            catch(Exception ex) { return nomesFornecedores; }
+        }
+
+        private List<string> SeparaFornecedores(List<string> notas, List<string> nomesFornecedores)
+        {
+            List<string> strings = new List<string>();
+
+            foreach(string nota in notas)
+            {
+                foreach (string nomeF in nomesFornecedores)
+                {
+                    if (nota.Contains(nomeF) && !strings.Contains(nomeF)) strings.Add(nomeF); 
+                }
+            }
+            return strings;
         }
 
         // nesse metodo verificamos se ja enviamos as notas de cada fornecedor para dai sim verificar

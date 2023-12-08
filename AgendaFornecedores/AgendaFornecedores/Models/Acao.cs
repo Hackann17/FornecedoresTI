@@ -67,7 +67,7 @@ namespace AgendaFornecedores.Models
                 con.Open();
                 //SELECT TOP 20 * FROM sua_tabela ORDER BY data_insercao DESC;
 
-                SqlCommand SqlCommand = new SqlCommand("select top 20 * from acoes order by id desc",con);
+                SqlCommand SqlCommand = new SqlCommand("select * from acoes order by id desc",con);
                 SqlDataReader leitor = SqlCommand.ExecuteReader();
 
                 while (leitor.Read())
@@ -94,22 +94,38 @@ namespace AgendaFornecedores.Models
         public List<string> VerificaAcaoEnvio(List<Fornecedor> fornecedores)
         {
             List<Acao> acoes = listarAcoes();
-            List<string> nomesfornecedores = new List<string>();
+            List<string> nomesFornecedores = new List<string>();
+
+            //nenuma açao foi realizada aos fornecedores, quase impossivel
+            if(acoes.Count == 0)
+            {
+                foreach(Fornecedor fornecedor in fornecedores)
+                {
+                    nomesFornecedores.Add(fornecedor.Nome);
+                }
+                return nomesFornecedores;
+            }
+
+            //prefiltrar lista de ações 
+            acoes.RemoveAll(ac => ac.Action != "EnviarNota");
 
             foreach (Fornecedor fornecedor in fornecedores)
             {
                 for (int i = 0; i < acoes.Count; i++)
-                {
-                    if (!(acoes[i].Action == "EnviarNota") || (acoes[i].Action == "EnviarNota" && !(acoes[i].Data.Month <= DateTime.Now.Month)))
+                {     
+                   if(fornecedor.Nome == acoes[i].NomeFornecedor)
                     {
-                        if (!nomesfornecedores.Contains(acoes[i].NomeFornecedor) && acoes[i].NomeFornecedor == fornecedor.Nome)
+                        if (acoes[i].Action != "EnviarNota" || acoes[i].Action == "EnviarNota" && !(acoes[i].Data.Month <= DateTime.Now.Month))
                         {
-                            nomesfornecedores.Add(fornecedor.Nome);
+                            if (!nomesFornecedores.Contains(acoes[i].NomeFornecedor))
+                            {
+                                nomesFornecedores.Add(acoes[i].NomeFornecedor);
+                            }
                         }
-                    } 
+                   }
                 }    
             }
-            return nomesfornecedores;
+            return nomesFornecedores;
         }
     }
 }
