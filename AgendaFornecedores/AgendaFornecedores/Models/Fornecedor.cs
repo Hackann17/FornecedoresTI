@@ -56,7 +56,7 @@ namespace AgendaFornecedores.Models
                 List<string> colunas = new List<string> { "cnpj" };
                 List<string> parametros = new List<string> { fornecedor.Cnpj };
 
-                if (SQL.Procurar("nomesFornecedores", colunas, parametros))
+                if (SQL.Procurar("Fornecedores", colunas, parametros))
                 {
                     con.Open();
 
@@ -132,7 +132,7 @@ namespace AgendaFornecedores.Models
             try
             {
                 con.Open();
-                string delete = $"DELETE FROM nomesFornecedores WHERE id = {fornecedor.Id}";
+                string delete = $"DELETE FROM Fornecedores WHERE id = {fornecedor.Id}";
                 SqlCommand mySqlCommand = new SqlCommand(delete, con);
 
                 if (mySqlCommand.ExecuteNonQuery() != null)
@@ -174,10 +174,13 @@ namespace AgendaFornecedores.Models
 
         private void AlteraDiretorio(Fornecedor forn, string nome)
         {
-            string diretorio = $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{DateTime.Now.Year}\\{forn.nome}";
+            // $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{DateTime.Now.Year}\\{forn.nome}
+            string diretorio = Path.Combine("Z:","Fornecedores",DateTime.Now.Year.ToString(),forn.nome) ;
+            Console.WriteLine(diretorio);
             if(Directory.Exists(diretorio))
             {
-                string novoDiretorio = $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{DateTime.Now.Year}\\{nome}";
+                //$"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{DateTime.Now.Year}\\{nome}";
+                string novoDiretorio = Path.Combine("Z:","Fornecedores",DateTime.Now.Year.ToString(),nome);
                 Directory.Move(diretorio,novoDiretorio);
             }
         }
@@ -403,7 +406,7 @@ namespace AgendaFornecedores.Models
         private string verificaCriaDiretorio(String nomeFornecedor, DateTime hoje)
         {
             // modelo padrao diretorio "ano/fornecedor/faturas/X_MES               
-            string diretorioAno = $"C:\\Users\\pedro.godinho\\Documents\\Pedro\\{hoje.Year}";
+            string diretorioAno = $"Z:\\Fornecedores\\{hoje.Year}";
 
             // Lista para armazenar os nomes das pastas
             string[] pastas = {"01_JAN", "02_FEV", "03_MAR", "04_ABR", "05_MAI", "06_JUN", "07_JUL", "08_AGO", "09_SET", "10_OUT", "11_NOV", "12_DEZ" };

@@ -44,7 +44,7 @@ namespace AgendaFornecedores.Controllers
             return RedirectToAction("Index", "Home"); ;
         }
         public IActionResult Alterar(Fornecedor fornecedor)
-        {
+         {
             //Fornecedor fornecedor = new Fornecedor(id, nomeFornecedor,cnpj,contato,email,anotacao, grupoT,  DateOnly.Parse(vencimentoFatura));
 
             if (fornecedor.AlterarFornecedor(fornecedor))
@@ -53,9 +53,17 @@ namespace AgendaFornecedores.Controllers
                 Acao ac = new Acao(0, u.NomeUsuario, "alterar", DateTime.Now, fornecedor.Nome);
                 //salva o objeto de ação e atualiza a lista de ações
                 string objtacao = JsonConvert.SerializeObject(ac);
+
+                TempData["ErroAlterar"] = "A alteração foi realizada com sucesso !!";
                 return RedirectToAction("RegistrarAcao", "Acao", new { objtacao });
             }
-            return View();
+            else
+            {
+                TempData["ErroAlterar"] = "Não foi possivel realizar a alteração";
+            }
+            TempData["alterfornecedor"] = JsonConvert.SerializeObject(fornecedor);
+
+            return RedirectToAction("Formulario", "Fornecedor");
         }
 
         public IActionResult redirecionarDados(string jfornecedor)
